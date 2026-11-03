@@ -12,7 +12,7 @@ function MemberRow({ m, right }) {
   const { lang } = useI18n()
   return (
     <li className="flex items-center gap-3 py-3">
-      <span className="grid size-10 shrink-0 place-items-center rounded-full bg-cream font-bold text-gold-ink">{m.name.trim()[0]}</span>
+      <span className="grid size-10 shrink-0 place-items-center rounded-full bg-sand-soft font-bold text-sand-ink">{m.name.trim()[0]}</span>
       <div className="min-w-0 flex-1">
         <div className="truncate font-bold">{m.name}</div>
         <div className="text-sm text-muted">{langLabel(m.lang)}</div>
@@ -53,29 +53,29 @@ export default function MessageDetail() {
             <span className="text-sm text-muted">{fmtTime(m.created_at, lang, t)}</span>
           </div>
           <p dir="rtl" lang="ar" className="text-xl font-bold leading-relaxed">{m.original_text}</p>
-          {to && <p className="mt-2 text-sm font-semibold text-gold-ink">{t('arrival.toNotArrived', { n: to.length })}</p>}
+          {to && <p className="mt-2 text-sm font-semibold text-sand-ink">{t('arrival.toNotArrived', { n: to.length })}</p>}
         </Card>
 
         <Card className="p-5">
-          <div className="mb-3 flex items-center gap-2 text-sm font-bold text-success">
-            <span className="size-2 animate-pulse rounded-full bg-success" />{t('acks.live')}
+          <div className="mb-3 flex items-center gap-2 text-sm font-bold text-primary">
+            <span className="size-2 animate-pulse rounded-full bg-primary" />{t('acks.live')}
           </div>
           <AckCounter count={count} total={total} size="lg" label={arrival ? 'arrival.label' : 'acks.understood'} />
         </Card>
 
         <Card className="px-4 pt-4">
           <h2 className="flex items-center gap-2 font-bold">
-            <Icon name="clock" className="size-5 text-gold-ink" />{t(arrival ? 'arrival.notArrived' : 'acks.notConfirmed')} ({pending.length})
+            <Icon name="clock" className="size-5 text-sand-ink" />{t(arrival ? 'arrival.notArrived' : 'acks.notConfirmed')} ({pending.length})
           </h2>
           {pending.length === 0
-            ? <p className="py-4 font-bold text-success">{t(arrival ? 'arrival.allArrived' : 'acks.allConfirmed')} ✓</p>
+            ? <p className="py-4 font-bold text-primary">{t(arrival ? 'arrival.allArrived' : 'acks.allConfirmed')} ✓</p>
             : <ul className="divide-y divide-line">{pending.map((p) => <MemberRow key={p.id} m={p} />)}</ul>}
         </Card>
 
         {confirmed.length > 0 && (
           <Card className="px-4 pt-4">
             <h2 className="flex items-center gap-2 font-bold">
-              <Icon name="checkCircle" className="size-5 text-success" />{t(arrival ? 'arrival.arrivedList' : 'acks.confirmed')} ({confirmed.length})
+              <Icon name="checkCircle" className="size-5 text-primary" />{t(arrival ? 'arrival.arrivedList' : 'acks.confirmed')} ({confirmed.length})
             </h2>
             <ul className="divide-y divide-line">
               {confirmed.map((p) => <MemberRow key={p.id} m={p} right={fmtTime(byMember[p.id], lang, t)} />)}
@@ -84,8 +84,8 @@ export default function MessageDetail() {
         )}
 
         {translations.length > 0 && !arrival && (
-          <details className="rounded-[var(--radius-card)] bg-mint p-4">
-            <summary className="flex cursor-pointer items-center gap-2 font-bold text-mint-ink">
+          <details className="rounded-[var(--radius-card)] bg-primary-soft p-4">
+            <summary className="flex cursor-pointer items-center gap-2 font-bold text-primary">
               <Icon name="languages" className="size-5" />{t('acks.translations')}
             </summary>
             <div className="mt-3 flex flex-col gap-3">

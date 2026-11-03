@@ -22,7 +22,7 @@ import { LeaderDataProvider } from './lib/leaderData'
 
 function Splash() {
   const { t } = useI18n()
-  return <div className="grid min-h-dvh place-items-center bg-navy-900 text-xl font-bold text-white">{t('app.name')}</div>
+  return <div className="grid min-h-dvh place-items-center bg-primary-dark text-xl font-bold text-white">{t('app.name')}</div>
 }
 
 export default function App() {

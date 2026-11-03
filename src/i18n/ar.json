@@ -38,7 +38,9 @@
     "loading": "جارٍ التحميل…",
     "language": "اللغة",
     "am": "ص",
-    "pm": "م"
+    "pm": "م",
+    "amLong": "صباحًا",
+    "pmLong": "مساءً"
   },
   "home": {
     "hello": "مرحبًا، {name}",
@@ -204,5 +206,12 @@
     "updateFailed": "تعذّر التحديث. حاول مرة أخرى.",
     "leaderNone": "لا توجد طلبات مساعدة",
     "callPilgrim": "اتصال"
+  },
+  "settings": {
+    "textSize": "حجم الخط",
+    "normal": "عادي",
+    "large": "كبير",
+    "xlarge": "أكبر",
+    "preview": "هكذا سيبدو النص"
   }
 }

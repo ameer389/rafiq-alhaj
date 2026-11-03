@@ -10,7 +10,7 @@ import { fmtDayTime, fmtPhone } from '../../lib/format'
 function Row({ icon, label, children, action }) {
   return (
     <li className="flex items-center gap-3.5 py-3.5">
-      <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-chip text-muted">
+      <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-neutral-soft text-muted">
         <Icon name={icon} className="size-6" />
       </span>
       <div className="min-w-0 flex-1">
@@ -44,20 +44,20 @@ export default function Campaign() {
       <TopBar title={t('campaign.title')} />
       <div className="flex flex-col gap-4 px-4 py-5">
         {!online && (
-          <p className="flex items-center gap-2 rounded-2xl bg-chip px-4 py-3 font-semibold">
+          <p className="flex items-center gap-2 rounded-2xl bg-neutral-soft px-4 py-3 font-semibold">
             <Icon name="wifiOff" className="size-5 shrink-0" />{t('campaign.offlineNote')}
           </p>
         )}
 
         <Card className="px-4 pt-4">
           <div className="flex items-center gap-3.5 pb-1">
-            <span className="grid size-14 place-items-center rounded-xl bg-cream text-gold-ink"><Icon name="users" className="size-7" /></span>
+            <span className="grid size-14 place-items-center rounded-xl bg-sand-soft text-sand-ink"><Icon name="users" className="size-7" /></span>
             <h2 className="text-2xl font-bold">{c?.name}</h2>
           </div>
           <ul className="divide-y divide-line">
             <Row icon="user" label={t('campaign.leader')} action={tel && (
               <a href={tel} aria-label={t('campaign.call')}
-                className="grid size-14 shrink-0 place-items-center rounded-2xl border-2 border-line-strong text-ink active:bg-chip">
+                className="grid size-14 shrink-0 place-items-center rounded-2xl border-2 border-line-strong text-ink active:bg-neutral-soft">
                 <Icon name="phone" className="size-6" />
               </a>
             )}>{c?.leader_name}</Row>

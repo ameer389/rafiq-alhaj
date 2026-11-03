@@ -2,32 +2,39 @@ import { NavLink } from 'react-router-dom'
 import Icon from './Icon'
 import { useI18n } from '../i18n'
 import { useLeaderData } from '../lib/leaderData'
+import { fmtNum } from '../lib/format'
 
-// items: [{ to, icon, label, badge? }]
+// Screen 40: white bar, thin top line; active = green icon + bold green label (no pill);
+// red badge on the icon corner.
 export default function BottomNav({ items }) {
-  const { t } = useI18n()
+  const { t, lang } = useI18n()
   const leader = useLeaderData() // null on pilgrim screens
   const badgeFor = (it) => (it.to === '/l/requests' ? leader?.openRequests?.length ?? 0 : it.badge)
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-20 mx-auto w-full max-w-[430px] border-t border-line bg-white pb-[env(safe-area-inset-bottom)]">
-      <ul className="grid grid-cols-4">
-        {items.map((it) => (
-          <li key={it.to}>
-            <NavLink to={it.to} end className="flex flex-col items-center gap-1 py-2.5 text-[0.95rem]">
-              {({ isActive }) => (
-                <>
-                  <span className={`relative rounded-full px-5 py-1 ${isActive ? 'bg-cream text-gold-ink' : 'text-muted'}`}>
-                    <Icon name={it.icon} className="size-6" />
-                    {badgeFor(it) > 0 && (
-                      <span className="absolute -top-1.5 end-2 grid size-5 place-items-center rounded-full bg-danger text-xs font-bold text-white">{badgeFor(it)}</span>
-                    )}
-                  </span>
-                  <span className={isActive ? 'font-bold text-ink' : 'text-muted'}>{t(it.label)}</span>
-                </>
-              )}
-            </NavLink>
-          </li>
-        ))}
+    <nav className="fixed inset-x-0 bottom-0 z-20 mx-auto w-full max-w-[430px] border-t border-line-soft bg-surface pb-[env(safe-area-inset-bottom)]">
+      <ul className="grid" style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}>
+        {items.map((it) => {
+          const badge = badgeFor(it)
+          return (
+            <li key={it.to}>
+              <NavLink to={it.to} end className="flex flex-col items-center gap-1 pb-2.5 pt-3">
+                {({ isActive }) => (
+                  <>
+                    <span className={`relative ${isActive ? 'text-primary' : 'text-muted'}`}>
+                      <Icon name={it.icon} className="size-7" strokeWidth={isActive ? 2.25 : 1.75} />
+                      {badge > 0 && (
+                        <span className="absolute -top-2 -end-3 grid min-w-6 place-items-center rounded-full bg-danger px-1.5 py-0.5 text-xs font-bold text-white">
+                          {fmtNum(badge, lang)}
+                        </span>
+                      )}
+                    </span>
+                    <span className={`text-[0.95rem] ${isActive ? 'font-bold text-primary' : 'text-muted'}`}>{t(it.label)}</span>
+                  </>
+                )}
+              </NavLink>
+            </li>
+          )
+        })}
       </ul>
     </nav>
   )

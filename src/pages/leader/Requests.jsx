@@ -11,8 +11,8 @@ import { fmtDayTime, fmtTime } from '../../lib/format'
 const ORDER = { open: 0, in_progress: 1, resolved: 2 }
 const STATUS_STYLE = {
   open: ['bg-danger-soft text-danger-ink', 'help.leaderOpen'],
-  in_progress: ['bg-cream text-gold-ink', 'help.in_progress'],
-  resolved: ['bg-mint text-success', 'help.resolved'],
+  in_progress: ['bg-sand-soft text-sand-ink', 'help.in_progress'],
+  resolved: ['bg-primary-soft text-primary', 'help.resolved'],
 }
 
 export const mapsUrl = (lat, lng) => `https://www.google.com/maps?q=${lat},${lng}`
@@ -35,7 +35,7 @@ function RequestCard({ r, member }) {
   return (
     <article id={r.id} className={`rounded-[var(--radius-card)] border bg-white p-4 ${urgent ? 'border-danger' : 'border-line'} ${r.status === 'resolved' ? 'opacity-70' : ''}`}>
       <div className="flex items-start gap-3">
-        <span className={`grid size-11 shrink-0 place-items-center rounded-full ${urgent ? 'bg-danger text-white' : 'bg-chip text-muted'}`}>
+        <span className={`grid size-11 shrink-0 place-items-center rounded-full ${urgent ? 'bg-danger text-white' : 'bg-neutral-soft text-muted'}`}>
           <Icon name={icon} className="size-6" />
         </span>
         <div className="min-w-0 flex-1">
@@ -53,12 +53,12 @@ function RequestCard({ r, member }) {
 
       <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-sm text-muted">
         <span>{t('help.createdOnDevice', { time: fmtDayTime(r.created_at, lang, t) })}</span>
-        {r.received_at && <span className={delayed ? 'font-semibold text-warn-ink' : ''}>· {t('help.received', { time: fmtTime(r.received_at, lang, t) })}</span>}
+        {r.received_at && <span className={delayed ? 'font-semibold text-sand-ink' : ''}>· {t('help.received', { time: fmtTime(r.received_at, lang, t) })}</span>}
       </div>
 
       {r.location_shared && r.lat != null && (
         <a href={mapsUrl(r.lat, r.lng)} target="_blank" rel="noreferrer"
-          className="mt-3 inline-flex items-center gap-2 rounded-xl bg-mint px-3 py-2 font-bold text-mint-ink">
+          className="mt-3 inline-flex items-center gap-2 rounded-xl bg-primary-soft px-3 py-2 font-bold text-primary">
           <Icon name="flag" className="size-5" />{t('help.openMap')}
         </a>
       )}
@@ -66,7 +66,7 @@ function RequestCard({ r, member }) {
       {r.status !== 'resolved' && (
         <div className="mt-3 grid grid-cols-2 gap-2">
           {r.status === 'open' ? (
-            <button onClick={() => setStatus('in_progress')} className="flex items-center justify-center gap-2 rounded-xl bg-navy-800 py-3 font-bold text-white">
+            <button onClick={() => setStatus('in_progress')} className="flex items-center justify-center gap-2 rounded-xl bg-primary py-3 font-bold text-white">
               <Icon name="handshake" className="size-5" />{t('help.startHelp')}
             </button>
           ) : <span />}

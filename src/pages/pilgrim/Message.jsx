@@ -49,9 +49,9 @@ export default function Message() {
       <TopBar title={t(arrival ? 'arrival.title' : 'msg.title')} back="/p" />
 
       <div className="flex flex-col gap-3 px-4 py-5">
-        <article className="rounded-[var(--radius-card)] border border-gold-line bg-cream p-5">
+        <article className="rounded-[var(--radius-card)] border border-sand-line bg-sand-soft p-5">
           <div className="flex flex-wrap items-center gap-2.5 font-semibold text-muted">
-            <span className="grid size-9 place-items-center rounded-full bg-gold text-navy-900"><Icon name="user" className="size-5" /></span>
+            <span className="grid size-9 place-items-center rounded-full bg-sand text-primary-dark"><Icon name="user" className="size-5" /></span>
             <span>{sender} · {t('msg.leaderRole')}</span>
             {m.priority !== 'normal' && (
               <span className={`ms-auto rounded-full px-3 py-0.5 text-sm font-bold ${PRIORITY_STYLE[m.priority]}`}>{t(`priority.${m.priority}`)}</span>
@@ -65,12 +65,12 @@ export default function Message() {
 
           {translated && (
             <>
-              <hr className="my-4 border-gold-line" />
+              <hr className="my-4 border-sand-line" />
               <div className="flex items-center gap-2 text-muted">
                 <Icon name="languages" className="size-5" />{t('msg.translatedFrom')}
               </div>
               <button onClick={() => setShowOriginal((v) => !v)}
-                className="mt-3 font-bold text-mint-ink underline underline-offset-4">
+                className="mt-3 font-bold text-primary underline underline-offset-4">
                 {showOriginal ? t('msg.hideOriginal') : t('msg.showOriginal')}
               </button>
               {showOriginal && (
@@ -96,13 +96,13 @@ export default function Message() {
         <div className="text-muted">{fmtTime(m.created_at, lang, t)}</div>
 
         {done ? (
-          <div className="flex items-center justify-center gap-2.5 rounded-2xl bg-mint py-5 text-xl font-bold text-mint-ink">
+          <div className="flex items-center justify-center gap-2.5 rounded-2xl bg-primary-soft py-5 text-xl font-bold text-primary">
             <Icon name="checkCircle" className="size-7" />{t(arrival ? 'arrival.confirmed' : 'msg.confirmed')}
           </div>
         ) : (
           <button onClick={onAck} disabled={busy}
             className={`flex items-center justify-center gap-3 rounded-2xl py-5 text-2xl font-bold text-white disabled:opacity-60
-              ${arrival ? 'bg-success' : 'bg-navy-800'}`}>
+              ${arrival ? 'bg-primary' : 'bg-primary'}`}>
             <Icon name="check" className="size-7" strokeWidth={2.5} />{t(arrival ? 'arrival.arrived' : 'msg.gotIt')}
           </button>
         )}

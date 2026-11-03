@@ -1,42 +1,63 @@
 @import "tailwindcss";
 
-/* ===== Design tokens (sampled from design/ mockups) — change colors here only ===== */
+/* ===== Design tokens — sampled from design/ (see design/INDEX.md). Change colors HERE only. =====
+   Colors carry meaning:
+     primary (green) = safety + main actions
+     danger  (red)   = «أنا ضائع» and REAL danger only
+     sand            = waiting / not sent yet / not arrived yet
+     neutral         = everything else (info)                                                    */
 @theme {
-  --color-navy-900: #071724;   /* dark headers */
-  --color-navy-800: #102d3f;   /* primary buttons */
-  --color-navy-700: #1c3d52;
-  --color-danger: #f05251;     /* "أنا ضائع", urgent */
-  --color-danger-soft: #fdeeee;
-  --color-danger-ink: #c62828;
-  --color-gold: #d9b15a;       /* icon circles, leader badge */
-  --color-gold-line: #dfbd6e;  /* cream card borders */
-  --color-gold-ink: #8a5a00;   /* brown labels ("آخر إعلان من القائد") */
-  --color-cream: #f7efd8;      /* leader-message card, assembly card */
-  --color-cream-2: #fff7d8;
-  --color-mint: #ddf6f3;       /* online chip, verified boxes */
-  --color-mint-ink: #0f766e;
-  --color-success: #15803d;
-  --color-warn: #fff4dc;       /* amber notes (e.g. backup translation) */
-  --color-warn-line: #f0c36a;
-  --color-warn-ink: #8a5300;
-  --color-page: #f3f7f8;       /* page background */
-  --color-line: #dbe3e7;       /* card borders */
-  --color-line-strong: #6f8593;/* outlined buttons */
-  --color-ink: #0b1b26;        /* main text */
-  --color-muted: #5b6b76;      /* secondary text */
-  --color-chip: #e7edf0;       /* grey chip / segmented bg */
+  /* surfaces & text */
+  --color-page: #faf9f5;          /* warm light background */
+  --color-surface: #ffffff;       /* cards */
+  --color-line: #e2dcd0;          /* card / chip / pill borders */
+  --color-line-soft: #eae5dc;     /* dividers inside cards, nav top border */
+  --color-line-strong: #cfc6b6;   /* outlined buttons, inputs */
+  --color-ink: #17292b;           /* main text */
+  --color-muted: #56615e;         /* secondary text */
+
+  /* primary — green */
+  --color-primary: #175b4d;
+  --color-primary-dark: #0e4237;
+  --color-primary-ink: #0d4136;   /* text on primary-soft */
+  --color-primary-soft: #e7f0ec;  /* icon circles, "listen" button, positive chips */
+  --color-primary-line: #c4dad2;
+
+  /* danger — red */
+  --color-danger: #b42318;
+  --color-danger-ink: #7a1a12;
+  --color-danger-soft: #fbeae8;
+  --color-danger-line: #efc2bc;
+
+  /* sand — waiting */
+  --color-sand: #a27618;          /* progress, icons */
+  --color-sand-ink: #593e0b;      /* text on sand-soft */
+  --color-sand-soft: #f6eedc;     /* "saved, not sent yet" boxes & chips */
+  --color-sand-line: #e2cfa6;
+  --color-sand-bg: #f8f4ea;       /* big icon circles */
+
+  /* neutral */
+  --color-neutral-soft: #f4f1ea;  /* info boxes, original-text box, segmented tracks */
+  --color-neutral-track: #e6e0d4; /* idle progress segments */
 
   --font-sans: "IBM Plex Sans Arabic", system-ui, sans-serif;
   --font-urdu: "Noto Nastaliq Urdu", "IBM Plex Sans Arabic", serif;
 
-  --radius-card: 1.25rem;
+  --radius-card: 1.125rem;   /* 18px — white cards */
+  --radius-hero: 1.375rem;   /* 22px — green assembly card, red «أنا ضائع» */
+  --radius-btn: 1rem;        /* 16px — big buttons, back pill */
 }
 
-html, body { background: var(--color-page); color: var(--color-ink); }
-body { font-family: var(--font-sans); -webkit-tap-highlight-color: transparent; }
+/* Large-text setting (screen 37): everything is rem-based, so scaling the root scales the
+   whole UI evenly. Set by lib/textSize.js as <html data-text="…">, saved on the device. */
+html { font-size: 100%; }
+html[data-text="large"] { font-size: 115%; }
+html[data-text="xlarge"] { font-size: 130%; }
 
-/* Per mockups 03/10: Urdu UI chrome uses IBM Plex; Nastaliq only for Urdu message content.
-   Add .font-urdu to any element that shows an Urdu message body. */
+html { background: #eeeae2; }   /* outside the phone column on desktop */
+body { color: var(--color-ink); font-family: var(--font-sans); -webkit-tap-highlight-color: transparent; }
+
+/* Urdu UI chrome uses IBM Plex; Nastaliq for Urdu message bodies (add .font-urdu). */
 .font-urdu { font-family: var(--font-urdu); line-height: 2.1; }
 
 button { cursor: pointer; }

@@ -113,7 +113,7 @@ export default function NewMessage() {
           <h2 className="mb-2 text-lg font-bold">{t('newMsg.text')}</h2>
           <textarea value={text} onChange={(e) => setText(e.target.value)} dir="rtl" lang="ar" rows={3}
             placeholder={t('newMsg.textPh')}
-            className="w-full resize-none rounded-2xl border border-line-strong/70 bg-white px-4 py-3 text-xl leading-relaxed outline-none focus:border-navy-800" />
+            className="w-full resize-none rounded-2xl border border-line-strong/70 bg-white px-4 py-3 text-xl leading-relaxed outline-none focus:border-primary" />
         </section>
 
         <section>
@@ -126,8 +126,8 @@ export default function NewMessage() {
         </section>
 
         {/* Auto-translation preview (mint box) */}
-        <section className="rounded-[var(--radius-card)] bg-mint p-4">
-          <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 font-bold text-mint-ink">
+        <section className="rounded-[var(--radius-card)] bg-primary-soft p-4">
+          <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 font-bold text-primary">
             <Icon name="languages" className="size-5" />
             <span>{t('newMsg.autoTranslate')}</span>
             {targets.map((l) => (
@@ -140,21 +140,21 @@ export default function NewMessage() {
           )}
 
           {usedFallback && status !== 'failed' && (
-            <p className="mt-3 flex items-center gap-2 rounded-xl border border-warn-line bg-warn px-3 py-2 text-sm font-semibold text-warn-ink">
+            <p className="mt-3 flex items-center gap-2 rounded-xl border border-sand-line bg-sand-soft px-3 py-2 text-sm font-semibold text-sand-ink">
               <Icon name="info" className="size-4 shrink-0" />{t('newMsg.fallbackNote')}
             </p>
           )}
 
           {translations && (
             <div className="mt-3 flex flex-col gap-3">
-              <p className="text-sm text-mint-ink/80">{t('newMsg.editHint')}</p>
+              <p className="text-sm text-primary/80">{t('newMsg.editHint')}</p>
               {targets.map((l) => (
                 <label key={l} className="block">
                   <span className="mb-1 block text-sm font-bold text-muted">{langLabel(l)}</span>
                   <textarea value={translations[l] ?? ''} rows={l === 'ur' ? 3 : 2}
                     onChange={(e) => setTranslations((tr) => ({ ...tr, [l]: e.target.value }))}
                     dir={isRtl(l) ? 'rtl' : 'ltr'} lang={l} placeholder={t('newMsg.emptyFallback')}
-                    className={`w-full resize-none rounded-xl border border-mint-ink/20 bg-white/70 px-3 py-2 text-lg leading-relaxed outline-none focus:border-mint-ink
+                    className={`w-full resize-none rounded-xl border border-primary/20 bg-white/70 px-3 py-2 text-lg leading-relaxed outline-none focus:border-primary
                       ${l === 'ur' ? 'font-urdu' : ''}`} />
                 </label>
               ))}
@@ -163,9 +163,9 @@ export default function NewMessage() {
 
           {translations && (stale || status === 'failed' || status === 'translating') && (
             <div className="mt-3 flex items-center gap-3">
-              {stale && status !== 'translating' && <span className="text-sm text-gold-ink">{t('newMsg.stale')}</span>}
+              {stale && status !== 'translating' && <span className="text-sm text-sand-ink">{t('newMsg.stale')}</span>}
               <button type="button" onClick={runTranslate} disabled={!trimmed || busy}
-                className="ms-auto flex items-center gap-2 rounded-xl border-2 border-mint-ink/40 bg-white px-4 py-2 font-bold text-mint-ink disabled:opacity-50">
+                className="ms-auto flex items-center gap-2 rounded-xl border-2 border-primary/40 bg-white px-4 py-2 font-bold text-primary disabled:opacity-50">
                 <Icon name="languages" className={`size-5 ${status === 'translating' ? 'animate-pulse' : ''}`} />
                 {status === 'translating' ? t('newMsg.translating') : t('newMsg.retranslate')}
               </button>
@@ -174,8 +174,8 @@ export default function NewMessage() {
         </section>
 
         {/* Lock-screen notification preview (privacy) */}
-        <div className="flex items-center gap-3 rounded-2xl bg-navy-900 px-4 py-3.5 text-white">
-          <span className="grid size-10 place-items-center rounded-lg bg-white/10 text-gold"><Icon name="megaphone" className="size-5" /></span>
+        <div className="flex items-center gap-3 rounded-2xl bg-primary-dark px-4 py-3.5 text-white">
+          <span className="grid size-10 place-items-center rounded-lg bg-white/10 text-sand"><Icon name="megaphone" className="size-5" /></span>
           <div>
             <div className="font-bold">{t('newMsg.lockTitle')}</div>
             <div className="text-sm text-white/70">{t('newMsg.lockBody')}</div>
@@ -198,13 +198,13 @@ export default function NewMessage() {
       <div className="fixed inset-x-0 bottom-0 z-20 mx-auto w-full max-w-[430px] bg-page/95 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
         {needsPreview ? (
           <button onClick={runTranslate} disabled={!trimmed || busy}
-            className="flex w-full items-center justify-center gap-2.5 rounded-2xl bg-navy-800 py-4 text-xl font-bold text-white disabled:opacity-50">
+            className="flex w-full items-center justify-center gap-2.5 rounded-2xl bg-primary py-4 text-xl font-bold text-white disabled:opacity-50">
             <Icon name="languages" className="size-6" />
             {status === 'translating' ? t('newMsg.translating') : t('newMsg.translate')}
           </button>
         ) : (
           <button onClick={send} disabled={!trimmed || busy}
-            className="flex w-full items-center justify-center gap-2.5 rounded-2xl bg-navy-800 py-4 text-xl font-bold text-white disabled:opacity-50">
+            className="flex w-full items-center justify-center gap-2.5 rounded-2xl bg-primary py-4 text-xl font-bold text-white disabled:opacity-50">
             <Icon name="send" className="size-6 rtl:-scale-x-100" />
             {status === 'sending' ? t('newMsg.sending') : t('newMsg.send')}
           </button>

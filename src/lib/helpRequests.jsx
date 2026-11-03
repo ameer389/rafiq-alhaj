@@ -129,6 +129,6 @@ export function getLocationOnce(timeout = 8000) {
 export const HELP_TYPES = [
   { type: 'lost', icon: 'compass', tone: 'bg-danger-soft text-danger-ink' },
   { type: 'medical', icon: 'siren', tone: 'bg-danger-soft text-danger-ink' },
-  { type: 'other', icon: 'handshake', tone: 'bg-mint text-mint-ink' },
+  { type: 'other', icon: 'handshake', tone: 'bg-primary-soft text-primary' },
 ]
 export const isUrgentType = (type) => type === 'lost' || type === 'medical'

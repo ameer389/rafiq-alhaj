@@ -26,10 +26,10 @@ export default function Join() {
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[430px] flex-col bg-page">
-      <header className="rounded-b-[1.75rem] bg-navy-900 px-5 pb-8 pt-6 text-white">
+      <header className="rounded-b-[1.75rem] bg-primary-dark px-5 pb-8 pt-6 text-white">
         <div className="flex justify-end"><StatusChip /></div>
         <div className="mt-4 flex items-center gap-3">
-          <span className="grid size-14 place-items-center rounded-full bg-gold text-navy-900">
+          <span className="grid size-14 place-items-center rounded-full bg-sand text-primary-dark">
             <Icon name="users" className="size-7" />
           </span>
           <div>
@@ -47,7 +47,7 @@ export default function Join() {
               <button type="button" key={l.code} onClick={() => setLang(l.code)}
                 dir={l.code === 'ar' || l.code === 'ur' ? 'rtl' : 'ltr'}
                 className={`rounded-2xl border px-3 py-3.5 text-lg font-semibold transition
-                  ${lang === l.code ? 'border-navy-800 bg-navy-800 text-white' : 'border-line bg-white text-ink'}`}>
+                  ${lang === l.code ? 'border-primary bg-primary text-white' : 'border-line bg-white text-ink'}`}>
                 {l.label}
               </button>
             ))}
@@ -58,7 +58,7 @@ export default function Join() {
           <span className="mb-2 block font-bold">{t('join.code')}</span>
           <input value={code} onChange={(e) => setCode(e.target.value.toUpperCase())}
             placeholder={t('join.codePh')} dir="ltr" autoCapitalize="characters" autoComplete="off"
-            className="w-full rounded-2xl border border-line-strong/60 bg-white px-4 py-3.5 text-center text-xl font-bold tracking-widest outline-none focus:border-navy-800" />
+            className="w-full rounded-2xl border border-line-strong/60 bg-white px-4 py-3.5 text-center text-xl font-bold tracking-widest outline-none focus:border-primary" />
           <span className="mt-1.5 block text-sm text-muted">{t('join.leaderHint')}</span>
         </label>
 
@@ -66,13 +66,13 @@ export default function Join() {
           <span className="mb-2 block font-bold">{t('join.name')}</span>
           <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('join.namePh')}
             autoComplete="name"
-            className="w-full rounded-2xl border border-line-strong/60 bg-white px-4 py-3.5 text-lg outline-none focus:border-navy-800" />
+            className="w-full rounded-2xl border border-line-strong/60 bg-white px-4 py-3.5 text-lg outline-none focus:border-primary" />
         </label>
 
         {err && <p className="rounded-xl bg-danger-soft px-4 py-3 font-semibold text-danger-ink">{t(err)}</p>}
 
         <button disabled={busy}
-          className="mt-auto flex items-center justify-center gap-2 rounded-2xl bg-navy-800 py-4 text-lg font-bold text-white disabled:opacity-60">
+          className="mt-auto flex items-center justify-center gap-2 rounded-2xl bg-primary py-4 text-lg font-bold text-white disabled:opacity-60">
           {busy ? t('join.joining') : t('join.submit')}
         </button>
       </form>

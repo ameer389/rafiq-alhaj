@@ -10,12 +10,12 @@ import { fmtDayTime } from '../../lib/format'
 // Status chip for one of my requests: local queue state first, then the leader's status.
 export function RequestStatus({ r }) {
   const { t } = useI18n()
-  if (r.state === 'queued') return <Chip icon="clock" cls="bg-chip text-ink">{t('help.queued')}</Chip>
-  if (r.state === 'sending') return <Chip icon="refresh" cls="bg-chip text-ink" spin>{t('help.sending')}</Chip>
+  if (r.state === 'queued') return <Chip icon="clock" cls="bg-neutral-soft text-ink">{t('help.queued')}</Chip>
+  if (r.state === 'sending') return <Chip icon="refresh" cls="bg-neutral-soft text-ink" spin>{t('help.sending')}</Chip>
   const s = r.server?.status
-  if (s === 'in_progress') return <Chip icon="handshake" cls="bg-cream text-gold-ink">{t('help.in_progress')}</Chip>
-  if (s === 'resolved') return <Chip icon="checkCircle" cls="bg-mint text-success">{t('help.resolved')}</Chip>
-  return <Chip icon="check" cls="bg-mint text-mint-ink">{t('help.sent')}{s === 'open' ? ` · ${t('help.open')}` : ''}</Chip>
+  if (s === 'in_progress') return <Chip icon="handshake" cls="bg-sand-soft text-sand-ink">{t('help.in_progress')}</Chip>
+  if (s === 'resolved') return <Chip icon="checkCircle" cls="bg-primary-soft text-primary">{t('help.resolved')}</Chip>
+  return <Chip icon="check" cls="bg-primary-soft text-primary">{t('help.sent')}{s === 'open' ? ` · ${t('help.open')}` : ''}</Chip>
 }
 function Chip({ icon, cls, spin, children }) {
   return (
@@ -52,7 +52,7 @@ export default function Help() {
       <TopBar title={t('help.title')} back="/p" />
       <div className="flex flex-col gap-4 px-4 py-5">
         {!online && (
-          <p className="flex items-start gap-2 rounded-2xl bg-chip px-4 py-3 font-semibold">
+          <p className="flex items-start gap-2 rounded-2xl bg-neutral-soft px-4 py-3 font-semibold">
             <Icon name="wifiOff" className="mt-0.5 size-5 shrink-0" />{t('help.offlineHint')}
           </p>
         )}
@@ -63,7 +63,7 @@ export default function Help() {
             {HELP_TYPES.map((h) => (
               <button key={h.type} type="button" onClick={() => setType(h.type)} aria-pressed={type === h.type}
                 className={`flex min-h-28 flex-col items-center justify-center gap-2 rounded-[var(--radius-card)] border-2 bg-white p-3 text-center font-bold leading-snug
-                  ${type === h.type ? 'border-navy-800 ring-2 ring-navy-800/20' : 'border-line'}`}>
+                  ${type === h.type ? 'border-primary ring-2 ring-primary/20' : 'border-line'}`}>
                 <span className={`grid size-12 place-items-center rounded-xl ${h.tone}`}><Icon name={h.icon} className="size-6" /></span>
                 {t(`help.${h.type}`)}
               </button>
@@ -74,11 +74,11 @@ export default function Help() {
         <label className="block">
           <span className="mb-2 block text-lg font-bold">{t('help.note')}</span>
           <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2} placeholder={t('help.notePh')}
-            className="w-full resize-none rounded-2xl border border-line-strong/60 bg-white px-4 py-3 text-lg outline-none focus:border-navy-800" />
+            className="w-full resize-none rounded-2xl border border-line-strong/60 bg-white px-4 py-3 text-lg outline-none focus:border-primary" />
         </label>
 
         <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-line bg-white p-4">
-          <input type="checkbox" checked={share} onChange={(e) => setShare(e.target.checked)} className="mt-1 size-5 accent-navy-800" />
+          <input type="checkbox" checked={share} onChange={(e) => setShare(e.target.checked)} className="mt-1 size-5 accent-primary" />
           <span>
             <span className="block font-bold">{t('help.shareLocation')}</span>
             <span className="text-sm text-muted">{t('help.shareHint')}</span>
@@ -90,11 +90,11 @@ export default function Help() {
           <Icon name="send" className="size-6 rtl:-scale-x-100" />{busy && share ? t('help.locating') : t('help.submit')}
         </button>
         {savedMsg && (
-          <p className="flex items-center gap-2 rounded-xl bg-mint px-4 py-3 font-bold text-mint-ink">
+          <p className="flex items-center gap-2 rounded-xl bg-primary-soft px-4 py-3 font-bold text-primary">
             <Icon name="checkCircle" className="size-5" />{t('help.saved')}
           </p>
         )}
-        {noLoc && <p className="text-sm font-semibold text-warn-ink">{t('help.noLocation')}</p>}
+        {noLoc && <p className="text-sm font-semibold text-sand-ink">{t('help.noLocation')}</p>}
 
         <section className="mt-2">
           <h2 className="mb-2 text-lg font-bold">{t('help.mine')}</h2>
@@ -111,7 +111,7 @@ export default function Help() {
                   <span>{t('help.created', { time: fmtDayTime(r.created_at, lang, t) })}</span>
                   {r.location_shared && <span className="flex items-center gap-1"><Icon name="flag" className="size-4" />{t('help.sharedLocation')}</span>}
                 </div>
-                {r.state === 'queued' && <p className="mt-1.5 text-sm font-semibold text-warn-ink">{t('help.queuedHint')}</p>}
+                {r.state === 'queued' && <p className="mt-1.5 text-sm font-semibold text-sand-ink">{t('help.queuedHint')}</p>}
               </Card>
             ))}
           </div>

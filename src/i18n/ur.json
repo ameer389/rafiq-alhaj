@@ -38,7 +38,9 @@
     "loading": "لوڈ ہو رہا ہے…",
     "language": "زبان",
     "am": "صبح",
-    "pm": "شام"
+    "pm": "شام",
+    "amLong": "صبح",
+    "pmLong": "شام"
   },
   "home": {
     "hello": "السلام علیکم، {name}",
@@ -204,5 +206,12 @@
     "updateFailed": "اپ ڈیٹ نہیں ہو سکا۔",
     "leaderNone": "کوئی درخواست نہیں",
     "callPilgrim": "کال"
+  },
+  "settings": {
+    "textSize": "لکھائی کا سائز",
+    "normal": "عام",
+    "large": "بڑا",
+    "xlarge": "زیادہ بڑا",
+    "preview": "متن ایسا نظر آئے گا"
   }
 }

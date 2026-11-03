@@ -38,7 +38,9 @@
     "loading": "Loading…",
     "language": "Language",
     "am": "AM",
-    "pm": "PM"
+    "pm": "PM",
+    "amLong": "AM",
+    "pmLong": "PM"
   },
   "home": {
     "hello": "Welcome, {name}",
@@ -204,5 +206,12 @@
     "updateFailed": "Could not update. Try again.",
     "leaderNone": "No help requests",
     "callPilgrim": "Call"
+  },
+  "settings": {
+    "textSize": "Text size",
+    "normal": "Normal",
+    "large": "Large",
+    "xlarge": "Larger",
+    "preview": "This is how text will look"
   }
 }

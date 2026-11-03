@@ -1,47 +1,75 @@
 import { Link } from 'react-router-dom'
 import Icon from './Icon'
 import StatusChip from './StatusChip'
+import { useI18n } from '../i18n'
 
-// Mobile frame: max ~430px, centered on desktop.
+// Phone column: max ~430px, centered on desktop, warm page background.
 export function Screen({ children, nav, className = '' }) {
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-[430px] flex-col bg-page shadow-sm">
-      <main className={`flex-1 ${nav ? 'pb-24' : ''} ${className}`}>{children}</main>
+    <div className="mx-auto flex min-h-dvh w-full max-w-[430px] flex-col bg-page">
+      <main className={`flex-1 ${nav ? 'pb-24' : 'pb-6'} ${className}`}>{children}</main>
       {nav}
     </div>
   )
 }
 
-// Dark rounded header used on home screens (designs 04, 16)
-export function DarkHeader({ title, subtitle, badge, children }) {
+// Home-style header (screens 09, 40): title + subtitle on the start side, status chip on the end side.
+// `badge` replaces the chip; `children` render underneath.
+export function AppHeader({ title, subtitle, badge, children }) {
   return (
-    <header className="rounded-b-[1.75rem] bg-navy-900 px-5 pb-5 pt-6 text-white">
+    <header className="px-5 pb-2 pt-6">
       <div className="flex items-start justify-between gap-3">
-        <h1 className="text-[1.6rem] font-bold leading-tight">{title}</h1>
+        <div className="min-w-0">
+          <h1 className="text-[1.6rem] font-bold leading-tight">{title}</h1>
+          {subtitle && <div className="mt-1 flex items-center gap-2 text-muted">{subtitle}</div>}
+        </div>
         {badge ?? <StatusChip />}
       </div>
-      {subtitle && <div className="mt-1.5 flex items-center gap-2 text-white/75">{subtitle}</div>}
       {children}
     </header>
   )
 }
+/** @deprecated old name — kept so older screens keep working; same light header now. */
+export const DarkHeader = AppHeader
 
-// White top bar with back / close + title + status chip (designs 09-11, 17, 18)
-export function TopBar({ title, back, close }) {
-  const to = back ?? close
+// "‹ الرئيسية" / "< Home" — outlined white pill, green text (screens 02, 22, 33, 36).
+export function BackPill({ to, label }) {
+  const { t } = useI18n()
   return (
-    <header className="sticky top-0 z-10 flex items-center gap-3 border-b border-line bg-white px-5 py-4">
-      {to && (
-        <Link to={to} className="-ms-1 p-1 text-ink" aria-label="back">
-          <Icon name={close ? 'x' : 'arrowRight'} className="size-6 ltr:-scale-x-100" />
-        </Link>
+    <Link to={to} className="inline-flex min-h-12 items-center gap-2 rounded-[var(--radius-btn)] border border-line bg-surface px-4 text-lg font-bold text-primary">
+      {/* chevron on the start side, pointing "back": › in RTL, ‹ in LTR */}
+      <Icon name="chevronLeft" className="size-5 rtl:-scale-x-100" />
+      {label ?? t('common.back')}
+    </Link>
+  )
+}
+
+// Inner-page top: back pill + status chip, then a big page title (screens 04, 22, 33).
+// back / close = route to go back to; `backLabel` overrides the pill text (defaults: home → "الرئيسية").
+export function TopBar({ title, back, close, backLabel }) {
+  const { t } = useI18n()
+  const to = back ?? close
+  const label = backLabel ?? (to === '/p' || to === '/l' ? t('nav.home') : t('common.back'))
+  return (
+    <header className="px-5 pb-1 pt-5">
+      {to ? (
+        <>
+          <div className="flex items-center justify-between gap-3">
+            <BackPill to={to} label={label} />
+            <StatusChip />
+          </div>
+          {title && <h1 className="mt-5 text-[1.75rem] font-bold leading-tight">{title}</h1>}
+        </>
+      ) : (
+        <div className="flex items-start justify-between gap-3">
+          <h1 className="text-[1.75rem] font-bold leading-tight">{title}</h1>
+          <StatusChip />
+        </div>
       )}
-      <h1 className="flex-1 text-xl font-bold leading-snug">{title}</h1>
-      <StatusChip />
     </header>
   )
 }
 
 export function Card({ children, className = '' }) {
-  return <div className={`rounded-[var(--radius-card)] border border-line bg-white ${className}`}>{children}</div>
+  return <div className={`rounded-[var(--radius-card)] border border-line bg-surface ${className}`}>{children}</div>
 }

@@ -21,34 +21,25 @@ Demo moment: a judge types on the leader phone, and a second phone instantly sho
 
 Env vars (`.env.local`, never commit): `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`. Only the anon key goes in the frontend — never the service role key.
 
-## Design — match the existing mockups closely
-Reference screens are in `design/` — **open them and copy layout, spacing and components as closely as possible.** The team may tweak them today, so keep styles centralized (Tailwind theme tokens + a few shared components) so changes are cheap.
+## Design — follow `design/INDEX.md` (53 screens)
+The source of truth is **`design/INDEX.md`**: every screen file, what it shows, and its status — **RESTYLE** (look only), **ADAPT** (new look, keep our mechanism: campaign code instead of scanning a Nusuk card, no camera), **NEW** (small UI on existing backend), **LATER** (don't build; a button that leads there shows a «قريبًا» toast via `useSoon()` from `src/lib/toast.jsx`). Open the PNG and copy layout, spacing and copy closely.
 
-| file | screen |
-|---|---|
-| 01/02 | Trip preparation (offline download) — complete / downloading |
-| 03/04 | Pilgrim home — Urdu offline / Arabic online |
-| 05/06 | Assistant — no reliable answer / verified answer with source |
-| 07/08 | "أنا ضائع" — map to assembly point / before location permission |
-| 09/10/11 | **Leader message received** — English / Urdu / Arabic |
-| 12 | Nearby services (map + list) |
-| 13 | FAQ |
-| 14 | Return to my camp |
-| 15 | My campaign info |
-| 16 | **Leader home** (members, confirmed, open requests, urgent) |
-| 17 | Leader — members list with filters |
-| 18 | **Leader — new message** (recipients, Arabic text, priority, auto-translation preview) |
+Principles (from the guide): one home screen, BIG buttons, every task in two taps; honest copy (never claim something happened if it didn't).
+**Colors carry meaning:** green `primary` = safety + main actions · red `danger` = «أنا ضائع» and REAL danger only · `sand` = waiting / not sent yet / not arrived · neutral = all other info.
 
-Design tokens (sampled from mockups):
-- `navy-900 #071724` (dark headers), `navy-800 #102D3F` (primary buttons)
-- `danger #F05251` ("أنا ضائع" button, urgent)
-- `gold #D9B15A` (icon circles, leader badge), `cream #F7EFD8` / `#FFF7D8` (leader-message card, assembly-point card)
-- `mint #DDF6F3` (online chip, "verified/source" boxes), success green for check marks
-- page `#F3F7F8`, cards white with subtle border, `rounded-2xl`, generous padding
-- Font: **IBM Plex Sans Arabic** (Google Fonts) for Arabic/English; **Noto Nastaliq Urdu** for Urdu text
-- **RTL** for Arabic and Urdu (`dir="rtl"`), LTR for English/Indonesian — set `dir` per language on `<html>`
-- Mobile-first, max width ~430px centered on desktop. Bottom nav: الرئيسية / المساعد / حملتي / الإعدادات (pilgrim); الرئيسية / الطلبات / الأعضاء / الرسائل (leader)
-- Status chip top-left on every screen: "متصل" (mint) or "دون اتصال" (grey) from `navigator.onLine`
+Design tokens (sampled from the screens) live ONLY in `src/index.css` `@theme` — use the semantic names:
+- surfaces: `page #FAF9F5`, `surface #FFF`, `line #E2DCD0`, `line-soft #EAE5DC`, `line-strong`, text `ink #17292B`, `muted #56615E`
+- `primary #175B4D` (+ `-dark`, `-ink #0D4136`, `-soft #E7F0EC`, `-line #C4DAD2`)
+- `danger #B42318` (+ `-ink #7A1A12`, `-soft #FBEAE8`, `-line #EFC2BC`)
+- `sand #A27618` (+ `-ink #593E0B`, `-soft #F6EEDC`, `-line #E2CFA6`, `-bg`)
+- `neutral-soft #F4F1EA`, `neutral-track #E6E0D4`
+- radius: `--radius-card` 18px, `--radius-hero` 22px (green assembly card, red «أنا ضائع»), `--radius-btn` 16px
+- Font: **IBM Plex Sans Arabic**; **Noto Nastaliq Urdu** only for Urdu message bodies (`.font-urdu`)
+- Digits: Arabic UI uses Arabic-Indic (٤:٣٠ م), Urdu its own (۴:۳۰), en/id Latin — always via `fmtTime` / `fmtNum` in `src/lib/format.js`. Codes, phones and request ids stay Latin.
+- **Large text** (screen 37): `src/lib/textSize.js` sets `<html data-text="normal|large|xlarge">` (saved on device); everything is rem-based so the whole UI scales — never use px font sizes.
+- RTL for ar/ur, LTR for en/id (`dir` on `<html>`). Mobile-first, max width ~430px centered.
+
+Shared components (use these, don't restyle ad hoc): `components/Layout.jsx` (`Screen`, `AppHeader`, `TopBar` = back pill + chip + big title, `BackPill`, `Card`), `components/ui.jsx` (`Button` variants primary/danger/secondary/soft/sand, `Chip` tones, `Notice`, `IconCircle`, `InfoCard`/`InfoRow`, `StepBar`, `BottomSheet`), `StatusChip` (outlined pill, filled green dot = online, hollow dot = offline — calm, no error), `BottomNav` (leader only in the new design: green active, red badge), `Segmented`, `TextSizeControl`.
 
 ## ✅ Backend is ALREADY SET UP — do not recreate it
 Supabase project `rafiq-alhaj` (ref `ohnkxcvrgumhvcstmemj`, Frankfurt) already has: all tables below, RLS policies (tested), Realtime enabled, demo seed data, and the `translate` edge function deployed. Anonymous sign-ins are ON. `GEMINI_API_KEY` secret is set. **Frontend work only** unless a schema change is truly needed — if so, write the SQL in `supabase/migrations/` and tell the user; don't drop/recreate tables.

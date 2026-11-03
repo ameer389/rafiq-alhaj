@@ -60,18 +60,18 @@ export default function LeaderHome() {
       <DarkHeader
         title={t('home.hello', { name: member?.name ?? '' })}
         badge={
-          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-gold px-3.5 py-1.5 text-sm font-bold text-navy-900">
+          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-sand px-3.5 py-1.5 text-sm font-bold text-primary-dark">
             <Icon name="userCheck" className="size-4" />{t('leader.badge')}
           </span>
         }
-        subtitle={<><Icon name="users" className="size-5 text-gold" /><span>{campaign?.name} · {t('leader.membersCount', { n: pilgrims.length })}</span></>}
+        subtitle={<><Icon name="users" className="size-5 text-sand" /><span>{campaign?.name} · {t('leader.membersCount', { n: pilgrims.length })}</span></>}
       >
-        <div className="mt-3 flex items-center justify-between gap-2 text-white/75">
+        <div className="mt-3 flex items-center justify-between gap-2 text-muted">
           <span className="flex items-center gap-2">
-            <Icon name="checkCircle" className="size-5 text-mint" />
+            <Icon name="checkCircle" className="size-5 text-primary" />
             {online ? t('status.online') : t('status.offline')} · {t('leader.lastUpdate', { time: fmtTime(now, lang, t) })}
           </span>
-          <button onClick={() => confirm(t('common.signOutConfirm')) && signOut()} className="p-1 text-white/60" aria-label={t('common.signOut')}>
+          <button onClick={() => confirm(t('common.signOutConfirm')) && signOut()} className="p-1 text-muted" aria-label={t('common.signOut')}>
             <Icon name="logOut" className="size-5 ltr:-scale-x-100" />
           </button>
         </div>
@@ -94,17 +94,17 @@ export default function LeaderHome() {
 
         <div className="grid grid-cols-3 gap-3">
           <Stat value={pilgrims.length} label={t('leader.statMembers')} />
-          <Stat value={arrival.latest ? arrival.count : '—'} label={t('leader.statArrived')} tone="text-success"
+          <Stat value={arrival.latest ? arrival.count : '—'} label={t('leader.statArrived')} tone="text-primary"
             to={arrival.latest ? `/l/m/${arrival.latest.id}` : undefined} />
-          <Stat value={openRequests.length} label={t('leader.statRequests')} tone="text-gold-ink" to="/l/requests" />
+          <Stat value={openRequests.length} label={t('leader.statRequests')} tone="text-sand-ink" to="/l/requests" />
         </div>
 
         {/* Live "who understood" counter for the latest announcement */}
         {latest && (
           <Link to={`/l/m/${latest.id}`} className="block rounded-[var(--radius-card)] border border-line bg-white p-4">
             <div className="mb-2 flex items-center gap-2">
-              <Icon name="megaphone" className="size-5 text-gold-ink" />
-              <span className="font-bold text-gold-ink">{t('acks.latestMessage')}</span>
+              <Icon name="megaphone" className="size-5 text-sand-ink" />
+              <span className="font-bold text-sand-ink">{t('acks.latestMessage')}</span>
               <span className="ms-auto text-sm text-muted">{fmtTime(latest.created_at, lang, t)}</span>
             </div>
             <p dir="rtl" className="mb-3 line-clamp-2 leading-relaxed">{latest.original_text}</p>
@@ -115,7 +115,7 @@ export default function LeaderHome() {
                   {t('acks.notConfirmed')}: {latestStats.pending.slice(0, 3).map((p) => p.name).join('، ')}
                   {latestStats.pending.length > 3 ? ` +${latestStats.pending.length - 3}` : ''}
                 </span>
-                <span className="flex shrink-0 items-center gap-1 font-bold text-navy-800">
+                <span className="flex shrink-0 items-center gap-1 font-bold text-primary">
                   {t('acks.details')}<Icon name="chevronLeft" className="size-4 ltr:-scale-x-100" />
                 </span>
               </div>
@@ -127,13 +127,13 @@ export default function LeaderHome() {
           <Link to={`/l/m/${arrival.latest.id}`} className="flex shrink-0 items-center gap-1.5 rounded-full bg-white px-3.5 py-2 font-bold">
             <span>{t('arrival.label')}</span>
             <span dir="ltr" className="tabular-nums">{arrival.count} / {arrival.total}</span>
-            <Icon name="userCheck" className="size-4 text-success" />
+            <Icon name="userCheck" className="size-4 text-primary" />
           </Link>
         )} />
 
         <div className="grid grid-cols-2 gap-3">
-          <Link to="/l/new" className="flex items-center justify-center gap-2.5 rounded-2xl bg-navy-800 px-3 py-5 text-lg font-bold text-white">
-            <Icon name="megaphone" className="size-6 text-gold" />{t('leader.quickAnnouncement')}
+          <Link to="/l/new" className="flex items-center justify-center gap-2.5 rounded-2xl bg-primary px-3 py-5 text-lg font-bold text-white">
+            <Icon name="megaphone" className="size-6 text-sand" />{t('leader.quickAnnouncement')}
           </Link>
           <button onClick={onArrivalCheck} disabled={arrivalBusy}
             className="flex items-center justify-center gap-2.5 rounded-2xl border-2 border-line-strong bg-white px-3 py-4 text-lg font-bold disabled:opacity-60">

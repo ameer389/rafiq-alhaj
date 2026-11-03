@@ -7,8 +7,8 @@ export default function AssemblyCard({ campaign, aside }) {
   const { t, lang } = useI18n()
   if (!campaign) return null
   return (
-    <div className="flex items-center gap-4 rounded-[var(--radius-card)] border border-gold-line bg-cream p-4">
-      <span className="grid size-14 shrink-0 place-items-center rounded-full bg-gold text-navy-900">
+    <div className="flex items-center gap-4 rounded-[var(--radius-card)] border border-sand-line bg-sand-soft p-4">
+      <span className="grid size-14 shrink-0 place-items-center rounded-full bg-sand text-primary-dark">
         <Icon name="flag" className="size-7" />
       </span>
       <div className="min-w-0 flex-1">

@@ -38,7 +38,9 @@
     "loading": "Memuat…",
     "language": "Bahasa",
     "am": "pagi",
-    "pm": "sore"
+    "pm": "sore",
+    "amLong": "pagi",
+    "pmLong": "sore"
   },
   "home": {
     "hello": "Selamat datang, {name}",
@@ -204,5 +206,12 @@
     "updateFailed": "Gagal memperbarui.",
     "leaderNone": "Tidak ada permintaan",
     "callPilgrim": "Telepon"
+  },
+  "settings": {
+    "textSize": "Ukuran teks",
+    "normal": "Normal",
+    "large": "Besar",
+    "xlarge": "Lebih besar",
+    "preview": "Begini tampilan teksnya"
   }
 }

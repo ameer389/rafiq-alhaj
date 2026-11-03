@@ -31,7 +31,7 @@ export default function PilgrimHome() {
     <Screen nav={<BottomNav items={PILGRIM_NAV} />}>
       <DarkHeader
         title={t('home.hello', { name: member?.name ?? '' })}
-        subtitle={<><Icon name="users" className="size-5 text-gold" /><span>{campaign?.name}</span></>}
+        subtitle={<><Icon name="users" className="size-5 text-sand" /><span>{campaign?.name}</span></>}
       />
 
       <div className="flex flex-col gap-4 px-4 py-5">
@@ -54,11 +54,11 @@ export default function PilgrimHome() {
               className="relative flex min-h-32 flex-col gap-3 rounded-[var(--radius-card)] border border-line bg-white p-3.5 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
               {/* design 03: clock badge = something waiting to be sent */}
               {tile.to === '/p/help' && queuedCount > 0 && (
-                <span className="absolute end-3 top-3 grid size-8 place-items-center rounded-full bg-cream text-gold-ink" title={t('help.queued')}>
+                <span className="absolute end-3 top-3 grid size-8 place-items-center rounded-full bg-sand-soft text-sand-ink" title={t('help.queued')}>
                   <Icon name="clock" className="size-5" />
                 </span>
               )}
-              <span className="grid size-12 place-items-center rounded-xl bg-mint text-mint-ink">
+              <span className="grid size-12 place-items-center rounded-xl bg-primary-soft text-primary">
                 <Icon name={tile.icon} className="size-6" />
               </span>
               <span className="text-[1.05rem] font-bold leading-snug">{t(tile.label)}</span>
@@ -68,7 +68,7 @@ export default function PilgrimHome() {
 
         {latest && !latestUnread && <LatestMessageCard m={latest} />}
         {messages.length > 1 && (
-          <Link to="/p/messages" className="text-center font-bold text-mint-ink underline underline-offset-4">
+          <Link to="/p/messages" className="text-center font-bold text-primary underline underline-offset-4">
             {t('msg.all')} ({messages.length})
           </Link>
         )}
