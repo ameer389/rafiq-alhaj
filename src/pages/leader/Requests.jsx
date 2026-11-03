@@ -8,9 +8,10 @@ import { isAuthError } from '../../lib/session'
 import { HELP_TYPES, isUrgentType } from '../../lib/helpRequests'
 import { fmtDayTime, fmtTime } from '../../lib/format'
 
-const ORDER = { open: 0, in_progress: 1, resolved: 2 }
+const ORDER = { open: 0, acknowledged: 1, in_progress: 2, resolved: 3 }
 const STATUS_STYLE = {
   open: ['bg-danger-soft text-danger-ink', 'help.leaderOpen'],
+  acknowledged: ['bg-primary-soft text-primary', 'help.leaderAck'],
   in_progress: ['bg-sand-soft text-sand-ink', 'help.in_progress'],
   resolved: ['bg-primary-soft text-primary', 'help.resolved'],
 }
@@ -65,7 +66,7 @@ function RequestCard({ r, member }) {
 
       {r.status !== 'resolved' && (
         <div className="mt-3 grid grid-cols-2 gap-2">
-          {r.status === 'open' ? (
+          {r.status !== 'in_progress' ? (
             <button onClick={() => setStatus('in_progress')} className="flex items-center justify-center gap-2 rounded-xl bg-primary py-3 font-bold text-white">
               <Icon name="handshake" className="size-5" />{t('help.startHelp')}
             </button>

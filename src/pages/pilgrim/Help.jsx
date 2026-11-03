@@ -1,123 +1,99 @@
 import { useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Navigate, useParams } from 'react-router-dom'
 import Icon from '../../components/Icon'
-import { Card, Screen, TopBar } from '../../components/Layout'
+import { Screen, TopBar } from '../../components/Layout'
+import { Button, IconCircle, Notice, StepBar } from '../../components/ui'
+import { useCallLeader } from '../../components/CallLeader'
+import { LatestMessageCard } from '../../components/MessageCards'
 import { useI18n } from '../../i18n'
-import { getLocationOnce, HELP_TYPES, useHelpRequests } from '../../lib/helpRequests'
+import { requestCode, requestStep, useHelpRequests } from '../../lib/helpRequests'
+import { usePilgrimMessages } from '../../lib/pilgrimMessages'
 import { useOnline } from '../../lib/useOnline'
-import { fmtDayTime } from '../../lib/format'
+import { fmtNum } from '../../lib/format'
 
-// Status chip for one of my requests: local queue state first, then the leader's status.
-export function RequestStatus({ r }) {
-  const { t } = useI18n()
-  if (r.state === 'queued') return <Chip icon="clock" cls="bg-neutral-soft text-ink">{t('help.queued')}</Chip>
-  if (r.state === 'sending') return <Chip icon="refresh" cls="bg-neutral-soft text-ink" spin>{t('help.sending')}</Chip>
-  const s = r.server?.status
-  if (s === 'in_progress') return <Chip icon="handshake" cls="bg-sand-soft text-sand-ink">{t('help.in_progress')}</Chip>
-  if (s === 'resolved') return <Chip icon="checkCircle" cls="bg-primary-soft text-primary">{t('help.resolved')}</Chip>
-  return <Chip icon="check" cls="bg-primary-soft text-primary">{t('help.sent')}{s === 'open' ? ` · ${t('help.open')}` : ''}</Chip>
-}
-function Chip({ icon, cls, spin, children }) {
-  return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-bold ${cls}`}>
-      <Icon name={icon} className={`size-4 ${spin ? 'animate-spin' : ''}`} />{children}
-    </span>
-  )
+// /p/help → my active request, or start from «أنا ضائع».
+export function HelpIndex() {
+  const { active } = useHelpRequests()
+  return <Navigate to={active ? `/p/help/${active.client_id}` : '/p/lost'} replace />
 }
 
-// Feature 7 — help request that works offline (queued on the device, auto-sent later).
-export default function Help() {
+// Screens 22–27 — one help request, step by step. Honest: each step only claims what really happened.
+//  1 saved on phone (22) / send failed (23) · 2 arrived (24) · 3 supervisor took it (25)
+//  4 help on the way (26) · 5 arrived safe / closed (27)
+export default function HelpStatus() {
+  const { cid } = useParams()
   const { t, lang } = useI18n()
   const online = useOnline()
-  const { requests, submit } = useHelpRequests()
-  const [params] = useSearchParams()
-  const [type, setType] = useState(() => (['lost', 'medical', 'other'].includes(params.get('type')) ? params.get('type') : null))
-  const [note, setNote] = useState('')
-  const [share, setShare] = useState(false)
-  const [busy, setBusy] = useState(false)
+  const { requests, retry, resolveMine, sharing, startSharing, stopSharing } = useHelpRequests()
+  const { messages } = usePilgrimMessages()
+  const callLeader = useCallLeader()
   const [noLoc, setNoLoc] = useState(false)
-  const [savedMsg, setSavedMsg] = useState(false)
+  const [locBusy, setLocBusy] = useState(false)
 
-  async function onSubmit() {
-    if (!type) return
-    setBusy(true); setNoLoc(false)
-    let loc = null
-    if (share) { loc = await getLocationOnce(); if (!loc) setNoLoc(true) }
-    submit({ type, note, ...(loc ?? {}) })
-    setBusy(false); setType(null); setNote(''); setShare(false); setSavedMsg(true)
-    setTimeout(() => setSavedMsg(false), 4000)
+  const r = requests.find((x) => x.client_id === cid)
+  if (!r) return <Navigate to="/p/lost" replace />
+
+  const step = requestStep(r)
+  const failed = step === 1 && r.failed && online
+  const byLeader = step === 5 && r.server?.resolved_by === 'leader' && !r.resolvedLocally
+  const [title, body] = step === 1
+    ? (failed ? ['req.failTitle', 'req.failBody'] : ['req.s1Title', 'req.s1Body'])
+    : step === 5 ? (byLeader ? ['req.closedTitle', 'req.closedBody'] : ['req.s5Title', 'req.s5Body'])
+    : [`req.s${step}Title`, `req.s${step}Body`]
+  // 26: the leader's latest message sent after the request
+  const leaderMsg = step === 4 ? messages.find((m) => m.created_at > r.created_at) : null
+
+  async function shareNow() {
+    setLocBusy(true); setNoLoc(false)
+    const ok = await startSharing()
+    setLocBusy(false); if (!ok) setNoLoc(true)
   }
 
   return (
     <Screen>
-      <TopBar title={t('help.title')} back="/p" />
-      <div className="flex flex-col gap-4 px-4 py-5">
-        {!online && (
-          <p className="flex items-start gap-2 rounded-2xl bg-neutral-soft px-4 py-3 font-semibold">
-            <Icon name="wifiOff" className="mt-0.5 size-5 shrink-0" />{t('help.offlineHint')}
-          </p>
-        )}
-
-        <section>
-          <h2 className="mb-2 text-lg font-bold">{t('help.whatType')}</h2>
-          <div className="grid grid-cols-3 gap-3">
-            {HELP_TYPES.map((h) => (
-              <button key={h.type} type="button" onClick={() => setType(h.type)} aria-pressed={type === h.type}
-                className={`flex min-h-28 flex-col items-center justify-center gap-2 rounded-[var(--radius-card)] border-2 bg-white p-3 text-center font-bold leading-snug
-                  ${type === h.type ? 'border-primary ring-2 ring-primary/20' : 'border-line'}`}>
-                <span className={`grid size-12 place-items-center rounded-xl ${h.tone}`}><Icon name={h.icon} className="size-6" /></span>
-                {t(`help.${h.type}`)}
-              </button>
-            ))}
-          </div>
-        </section>
-
-        <label className="block">
-          <span className="mb-2 block text-lg font-bold">{t('help.note')}</span>
-          <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2} placeholder={t('help.notePh')}
-            className="w-full resize-none rounded-2xl border border-line-strong/60 bg-white px-4 py-3 text-lg outline-none focus:border-primary" />
-        </label>
-
-        <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-line bg-white p-4">
-          <input type="checkbox" checked={share} onChange={(e) => setShare(e.target.checked)} className="mt-1 size-5 accent-primary" />
-          <span>
-            <span className="block font-bold">{t('help.shareLocation')}</span>
-            <span className="text-sm text-muted">{t('help.shareHint')}</span>
-          </span>
-        </label>
-
-        <button onClick={onSubmit} disabled={!type || busy}
-          className="flex items-center justify-center gap-2.5 rounded-2xl bg-danger py-4 text-xl font-bold text-white disabled:opacity-50">
-          <Icon name="send" className="size-6 rtl:-scale-x-100" />{busy && share ? t('help.locating') : t('help.submit')}
-        </button>
-        {savedMsg && (
-          <p className="flex items-center gap-2 rounded-xl bg-primary-soft px-4 py-3 font-bold text-primary">
-            <Icon name="checkCircle" className="size-5" />{t('help.saved')}
-          </p>
-        )}
-        {noLoc && <p className="text-sm font-semibold text-sand-ink">{t('help.noLocation')}</p>}
-
-        <section className="mt-2">
-          <h2 className="mb-2 text-lg font-bold">{t('help.mine')}</h2>
-          {requests.length === 0 && <p className="py-4 text-center text-muted">{t('help.none')}</p>}
-          <div className="flex flex-col gap-3">
-            {requests.map((r) => (
-              <Card key={r.client_id} className="p-4">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="font-bold">{t(`help.${r.type}`)}</span>
-                  <RequestStatus r={r} />
-                </div>
-                {r.note && <p className="mt-1.5 text-muted">{r.note}</p>}
-                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted">
-                  <span>{t('help.created', { time: fmtDayTime(r.created_at, lang, t) })}</span>
-                  {r.location_shared && <span className="flex items-center gap-1"><Icon name="flag" className="size-4" />{t('help.sharedLocation')}</span>}
-                </div>
-                {r.state === 'queued' && <p className="mt-1.5 text-sm font-semibold text-sand-ink">{t('help.queuedHint')}</p>}
-              </Card>
-            ))}
-          </div>
-        </section>
+      <TopBar back="/p" />
+      <div className="flex flex-col items-center px-5 pt-6 text-center">
+        <IconCircle icon={step === 1 ? 'clock' : 'check'} tone={step === 1 ? 'sand' : 'primary'} size="size-20" iconSize="size-10" />
+        <h1 className="mt-5 text-[1.75rem] font-bold leading-snug">{t(title)}</h1>
+        <p className="mt-2 text-lg text-muted">{t(body)}</p>
+        {byLeader && r.server?.resolution_note && <p className="mt-1 text-lg">«{r.server.resolution_note}»</p>}
+        <div className="mt-6 w-full"><StepBar step={step} tone={step === 1 ? 'sand' : 'primary'} /></div>
+        <p className="mt-3 text-muted">
+          {t('req.step', { n: fmtNum(step, lang), total: fmtNum(5, lang) })} · {t('req.reqNo')} <b dir="ltr">{requestCode(r)}</b>
+        </p>
       </div>
+
+      <div className="mt-5 flex flex-col gap-4 px-5">
+        {step === 1 && !failed && <Notice tone="sand">{t('req.s1Notice')}</Notice>}
+        {leaderMsg && <LatestMessageCard m={leaderMsg} />}
+
+        {step === 5 ? (
+          <Button to="/p">{t('req.backHome')}</Button>
+        ) : (
+          <>
+            {failed && <Button onClick={() => retry(r.client_id)}>{t('req.retryNow')}</Button>}
+            <Button icon="check" onClick={() => resolveMine(r)}>{t('req.arrivedSafe')}</Button>
+            <Button variant="secondary" icon="phone" onClick={callLeader.call}>{t('home.callLeader')}</Button>
+
+            {/* location row (22–26): explicit, stoppable, stops by itself on «وصلت بأمان» */}
+            <div className="flex min-h-16 items-center gap-3 rounded-[var(--radius-card)] border border-line bg-neutral-soft px-4 py-3">
+              <Icon name="mapPin" className="size-6 shrink-0 text-ink" />
+              <span className="flex-1 text-lg">
+                {sharing ? t('req.locSending') : r.state !== 'sent' && r.location_shared ? t('req.locSaved') : t('req.locNotSent')}
+              </span>
+              {sharing
+                ? <button onClick={stopSharing} className="px-2 py-2 text-lg font-bold text-primary">{t('req.stop')}</button>
+                : !(r.state !== 'sent' && r.location_shared) && (
+                  <button onClick={shareNow} disabled={locBusy} className="px-2 py-2 text-lg font-bold text-primary disabled:opacity-50">
+                    {locBusy ? t('req.locating') : t('req.sendLoc')}
+                  </button>
+                )}
+            </div>
+            {noLoc && <p className="text-center text-sand-ink">{t('req.noLocation')}</p>}
+          </>
+        )}
+      </div>
+      {callLeader.sheet}
     </Screen>
   )
 }

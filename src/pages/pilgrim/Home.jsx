@@ -1,16 +1,16 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import Icon from '../../components/Icon'
 import AssemblyCard from '../../components/AssemblyCard'
 import { AppHeader, Screen } from '../../components/Layout'
-import { BottomSheet, Button, IconCircle } from '../../components/ui'
+import { Button, IconCircle } from '../../components/ui'
 import { LatestMessageCard } from '../../components/MessageCards'
 import { useI18n } from '../../i18n'
 import { useSession } from '../../lib/session'
 import { usePilgrimMessages } from '../../lib/pilgrimMessages'
-import { useHelpRequests } from '../../lib/helpRequests'
+import { requestStep, useHelpRequests } from '../../lib/helpRequests'
+import { useCallLeader } from '../../components/CallLeader'
 import { useSoon } from '../../lib/toast'
-import { fmtPhone, fmtTime } from '../../lib/format'
+import { fmtTime } from '../../lib/format'
 
 // Screen 11 — status of my open help request, on top of home. Honest: "arrived" ≠ "seen".
 const REQ_STYLE = {
@@ -21,16 +21,15 @@ const REQ_STYLE = {
 }
 function OpenRequestCard() {
   const { t } = useI18n()
-  const { requests } = useHelpRequests()
-  const r = requests.find((x) => x.state !== 'sent' || (x.server?.status ?? 'open') !== 'resolved')
+  const { active: r } = useHelpRequests()
   if (!r) return null
-  const key = r.state !== 'sent' ? 'queued' : (r.server?.status ?? 'open')
+  const key = ['', 'queued', 'open', 'acknowledged', 'in_progress'][requestStep(r)]
   const [cls, k] = REQ_STYLE[key] ?? REQ_STYLE.open
   return (
     <section className={`rounded-[var(--radius-card)] border px-5 py-4 ${cls}`}>
       <h2 className="text-xl font-bold">{t(`home.${k}_title`)}</h2>
       <p className="mt-1.5 text-lg leading-relaxed">{t(`home.${k}_body`)}</p>
-      <Link to="/p/help" className="mt-2 inline-block text-lg font-bold underline underline-offset-4">{t('home.viewRequest')}</Link>
+      <Link to={`/p/help/${r.client_id}`} className="mt-2 inline-block text-lg font-bold underline underline-offset-4">{t('home.viewRequest')}</Link>
     </section>
   )
 }
@@ -55,17 +54,6 @@ function AssemblyChangedAlert() {
   )
 }
 
-// Screen 13 — call my leader. Phones dial directly (tel:); elsewhere a sheet shows name + number.
-function useCallLeader(campaign) {
-  const [open, setOpen] = useState(false)
-  const tel = campaign?.leader_phone ? `tel:${campaign.leader_phone.replace(/\s+/g, '')}` : null
-  const call = () => {
-    if (tel && window.matchMedia?.('(pointer: coarse)').matches) window.location.href = tel
-    else setOpen(true)
-  }
-  return { open, close: () => setOpen(false), call, tel }
-}
-
 function Tile({ icon, label, onClick }) {
   return (
     <button type="button" onClick={onClick}
@@ -82,7 +70,7 @@ export default function PilgrimHome() {
   const { campaign } = useSession()
   const { messages, acked } = usePilgrimMessages()
   const soon = useSoon()
-  const callLeader = useCallLeader(campaign)
+  const callLeader = useCallLeader()
   const latest = messages[0]
   const latestUnread = latest && !acked.has(latest.id)
 
@@ -99,7 +87,7 @@ export default function PilgrimHome() {
         <AssemblyCard campaign={campaign} />
 
         {/* Red = real danger only: «أنا ضائع» */}
-        <Link to="/p/help?type=lost"
+        <Link to="/p/lost"
           className="flex flex-col items-center rounded-[var(--radius-hero)] bg-danger px-6 py-6 text-center text-white transition active:brightness-95">
           <span className="grid h-12 w-16 place-items-center rounded-full bg-white/20"><Icon name="alert" className="size-8" /></span>
           <span className="mt-2 text-[2.4rem] font-bold leading-tight">{t('home.lost')}</span>
@@ -121,17 +109,7 @@ export default function PilgrimHome() {
         <Button variant="secondary" icon="users" to="/p/campaign" className="text-xl">{t('home.campaignSettings')}</Button>
       </div>
 
-      <BottomSheet open={callLeader.open} onClose={callLeader.close}>
-        <div className="flex flex-col items-center text-center">
-          <IconCircle icon="phone" size="size-20" iconSize="size-9" />
-          <h2 className="mt-4 text-2xl font-bold">{t('home.callTitle', { name: campaign?.leader_name ?? '' })}</h2>
-          {campaign?.leader_phone && <p dir="ltr" className="mt-2 text-xl font-bold">{fmtPhone(campaign.leader_phone)}</p>}
-        </div>
-        <div className="mt-5 flex flex-col gap-3">
-          {callLeader.tel && <Button href={callLeader.tel} icon="phone">{t('home.callNow')}</Button>}
-          <Button variant="secondary" onClick={callLeader.close}>{t('home.close')}</Button>
-        </div>
-      </BottomSheet>
+      {callLeader.sheet}
     </Screen>
   )
 }

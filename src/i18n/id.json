@@ -228,7 +228,8 @@
     "createdOnDevice": "Dibuat di perangkat {time}",
     "updateFailed": "Gagal memperbarui.",
     "leaderNone": "Tidak ada permintaan",
-    "callPilgrim": "Telepon"
+    "callPilgrim": "Telepon",
+    "leaderAck": "Diterima"
   },
   "settings": {
     "textSize": "Ukuran teks",
@@ -268,5 +269,43 @@
     "partialPending": "{items}: disimpan saat online kembali.",
     "item_campaign": "Titik kumpul dan nomor ketua",
     "item_messages": "Pesan ketua"
+  },
+  "req": {
+    "lostTitle": "Jangan khawatir, kami bantu Anda kembali ke rombongan",
+    "assemblyLabel": "Titik kumpul:",
+    "showWay": "Tunjukkan jalannya",
+    "sendSomeone": "Kirim seseorang ke saya",
+    "consentTitle": "Kirim lokasi Anda ke ketua agar bantuan lebih cepat?",
+    "consentBody": "Hanya ketua dan pengawas yang melihat, dan berhenti saat Anda tiba.",
+    "consentOffline": "Tidak ada internet: permintaan disimpan dan dikirim begitu online.",
+    "consentYes": "Ya, kirim lokasi saya",
+    "consentNo": "Kirim tanpa lokasi saya",
+    "locating": "Mencari lokasi Anda…",
+    "s1Title": "Permintaan tersimpan di ponsel Anda",
+    "s1Body": "Akan dikirim begitu internet kembali.",
+    "s1Notice": "Permintaan belum sampai ke ketua. Telepon jika bisa.",
+    "failTitle": "Permintaan gagal dikirim",
+    "failBody": "Masih tersimpan di ponsel Anda.",
+    "retryNow": "Coba kirim sekarang",
+    "s2Title": "Permintaan Anda sudah sampai",
+    "s2Body": "Menunggu pengawas menerimanya.",
+    "s3Title": "Pengawas menerima permintaan Anda",
+    "s3Body": "Akan segera menghubungi Anda. Tetap di tempat jika bisa.",
+    "s4Title": "Bantuan dalam perjalanan",
+    "s4Body": "Pengawas sedang menuju Anda.",
+    "s5Title": "Anda tiba dengan selamat",
+    "s5Body": "Permintaan ditutup dan lokasi tidak lagi dikirim.",
+    "closedTitle": "Permintaan ditutup",
+    "closedBody": "Ketua menutup permintaan.",
+    "arrivedSafe": "Saya sudah aman",
+    "backHome": "Kembali ke beranda",
+    "step": "Langkah {n} dari {total}",
+    "reqNo": "No. permintaan",
+    "locNotSent": "Lokasi Anda tidak dikirim",
+    "locSending": "Lokasi Anda dikirim ke ketua",
+    "locSaved": "Lokasi tersimpan bersama permintaan",
+    "sendLoc": "Kirim lokasi saya",
+    "stop": "Hentikan",
+    "noLocation": "Lokasi tidak didapat. Anda bisa mengirim tanpanya."
   }
 }

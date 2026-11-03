@@ -228,7 +228,8 @@
     "createdOnDevice": "Created on device {time}",
     "updateFailed": "Could not update. Try again.",
     "leaderNone": "No help requests",
-    "callPilgrim": "Call"
+    "callPilgrim": "Call",
+    "leaderAck": "Acknowledged"
   },
   "settings": {
     "textSize": "Text size",
@@ -268,5 +269,43 @@
     "partialPending": "{items}: will be saved when you're back online.",
     "item_campaign": "Meeting point and leader's number",
     "item_messages": "Leader messages"
+  },
+  "req": {
+    "lostTitle": "Don't worry, we'll get you back to your group",
+    "assemblyLabel": "Meeting point:",
+    "showWay": "Show me the way",
+    "sendSomeone": "Send someone to me",
+    "consentTitle": "Send your location to your leader so help reaches you faster?",
+    "consentBody": "Only your leader and the supervisor see it, and it stops when you arrive.",
+    "consentOffline": "No internet: your request will be saved and sent as soon as it's back.",
+    "consentYes": "Yes, send my location",
+    "consentNo": "Send the request without my location",
+    "locating": "Finding your location…",
+    "s1Title": "We saved your request on your phone",
+    "s1Body": "It will be sent as soon as the internet is back.",
+    "s1Notice": "Your request hasn't reached your leader yet. Call them if you can.",
+    "failTitle": "We couldn't send your request",
+    "failBody": "It's still saved on your phone.",
+    "retryNow": "Try sending now",
+    "s2Title": "Your request arrived",
+    "s2Body": "Waiting for a supervisor to take it.",
+    "s3Title": "A supervisor has your request",
+    "s3Body": "They'll contact you soon. Stay where you are if you can.",
+    "s4Title": "Help is on the way",
+    "s4Body": "A supervisor is on the way to you now.",
+    "s5Title": "You arrived safely",
+    "s5Body": "The request is closed and your location is no longer sent.",
+    "closedTitle": "Request closed",
+    "closedBody": "Your leader closed the request.",
+    "arrivedSafe": "I'm safe now",
+    "backHome": "Back to home",
+    "step": "Step {n} of {total}",
+    "reqNo": "Request no.",
+    "locNotSent": "Your location is not being sent",
+    "locSending": "Your location is being sent to your leader",
+    "locSaved": "Your location is saved with the request",
+    "sendLoc": "Send my location",
+    "stop": "Stop",
+    "noLocation": "Couldn't get your location. You can send without it."
   }
 }

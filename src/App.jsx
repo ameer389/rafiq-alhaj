@@ -8,7 +8,8 @@ import PilgrimHome from './pages/pilgrim/Home'
 import Message from './pages/pilgrim/Message'
 import MessageList from './pages/pilgrim/MessageList'
 import Campaign from './pages/pilgrim/Campaign'
-import Help from './pages/pilgrim/Help'
+import HelpStatus, { HelpIndex } from './pages/pilgrim/Help'
+import Lost from './pages/pilgrim/Lost'
 import Requests from './pages/leader/Requests'
 import { HelpRequestsProvider } from './lib/helpRequests'
 import { PilgrimMessagesProvider } from './lib/pilgrimMessages'
@@ -53,7 +54,9 @@ export default function App() {
       <Route path="/p/m/:id" element={<Message />} />
       <Route path="/p/messages" element={<MessageList />} />
       <Route path="/p/campaign" element={<Campaign />} />
-      <Route path="/p/help" element={<Help />} />
+      <Route path="/p/lost" element={<Lost />} />
+      <Route path="/p/help" element={<HelpIndex />} />
+      <Route path="/p/help/:cid" element={<HelpStatus />} />
       <Route path="/p/settings" element={<Navigate to="/p/campaign" replace />} />
       <Route path="/p/*" element={<Soon back="/p" />} />
       <Route path="*" element={<Navigate to="/p" replace />} />
