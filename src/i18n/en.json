@@ -1,7 +1,21 @@
 {
-  "app": { "name": "Rafiq Alhaj", "tagline": "Your link to your campaign leader, in your language" },
-  "status": { "online": "Online", "offline": "Offline" },
-  "nav": { "home": "Home", "assistant": "Assistant", "myCampaign": "My group", "settings": "Settings", "requests": "Requests", "members": "Members", "messages": "Messages" },
+  "app": {
+    "name": "Rafiq Alhaj",
+    "tagline": "Your link to your campaign leader, in your language"
+  },
+  "status": {
+    "online": "Online",
+    "offline": "Offline"
+  },
+  "nav": {
+    "home": "Home",
+    "assistant": "Assistant",
+    "myCampaign": "My group",
+    "settings": "Settings",
+    "requests": "Requests",
+    "members": "Members",
+    "messages": "Messages"
+  },
   "join": {
     "chooseLang": "Choose your language",
     "code": "Campaign code",
@@ -15,7 +29,17 @@
     "errName": "Please type your name.",
     "errGeneric": "Could not join. Check your connection and try again."
   },
-  "common": { "soon": "Coming soon", "soonBody": "This feature is being built.", "back": "Back", "signOut": "Leave campaign", "signOutConfirm": "Do you want to leave the campaign?", "loading": "Loading…", "language": "Language", "am": "AM", "pm": "PM" },
+  "common": {
+    "soon": "Coming soon",
+    "soonBody": "This feature is being built.",
+    "back": "Back",
+    "signOut": "Leave campaign",
+    "signOutConfirm": "Do you want to leave the campaign?",
+    "loading": "Loading…",
+    "language": "Language",
+    "am": "AM",
+    "pm": "PM"
+  },
   "home": {
     "hello": "Welcome, {name}",
     "assemblyPoint": "Current assembly point",
@@ -39,5 +63,39 @@
     "statSharing": "Sharing location",
     "quickAnnouncement": "Quick announcement",
     "arrivalCheck": "Arrival check"
+  },
+  "newMsg": {
+    "title": "New message",
+    "to": "To",
+    "all": "Everyone",
+    "group": "Group",
+    "notArrived": "Not arrived",
+    "notArrivedHint": "Available after an arrival check",
+    "text": "Message (Arabic)",
+    "textPh": "Write your message to the pilgrims…",
+    "priority": "Priority",
+    "autoTranslate": "Auto-translated",
+    "translate": "Translate & preview",
+    "translating": "Translating…",
+    "retranslate": "Translate again",
+    "stale": "Text changed after translating",
+    "failed": "Auto-translation failed. Type translations manually, or send and the Arabic text will be shown.",
+    "editHint": "Review the translations — you can edit them before sending",
+    "emptyFallback": "If left empty, the Arabic text is shown",
+    "lockTitle": "New message from your campaign",
+    "lockBody": "The lock screen does not show the name, location or text",
+    "send": "Send",
+    "sending": "Sending…",
+    "sendFailed": "Could not send. Please try again.",
+    "sent": "Message sent"
+  },
+  "priority": {
+    "normal": "Normal",
+    "important": "Important",
+    "urgent": "Urgent"
+  },
+  "messages": {
+    "empty": "No messages yet",
+    "newMessage": "New message"
   }
 }

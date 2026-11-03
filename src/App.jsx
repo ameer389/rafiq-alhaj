@@ -7,6 +7,8 @@ import Soon from './pages/Soon'
 import PilgrimHome from './pages/pilgrim/Home'
 import Settings from './pages/pilgrim/Settings'
 import LeaderHome from './pages/leader/Home'
+import NewMessage from './pages/leader/NewMessage'
+import Messages from './pages/leader/Messages'
 
 function Splash() {
   const { t } = useI18n()
@@ -25,7 +27,8 @@ export default function App() {
       <Route path="/l" element={<LeaderHome />} />
       <Route path="/l/requests" element={<Soon nav={LEADER_NAV} title="nav.requests" />} />
       <Route path="/l/members" element={<Soon nav={LEADER_NAV} title="nav.members" />} />
-      <Route path="/l/messages" element={<Soon nav={LEADER_NAV} title="nav.messages" />} />
+      <Route path="/l/messages" element={<Messages />} />
+      <Route path="/l/new" element={<NewMessage />} />
       <Route path="/l/*" element={<Soon back="/l" />} />
       <Route path="*" element={<Navigate to="/l" replace />} />
     </Routes>

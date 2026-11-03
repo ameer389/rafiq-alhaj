@@ -1,7 +1,21 @@
 {
-  "app": { "name": "Rafiq Alhaj", "tagline": "Penghubung Anda dengan ketua rombongan, dalam bahasa Anda" },
-  "status": { "online": "Daring", "offline": "Luring" },
-  "nav": { "home": "Beranda", "assistant": "Asisten", "myCampaign": "Rombongan", "settings": "Pengaturan", "requests": "Permintaan", "members": "Anggota", "messages": "Pesan" },
+  "app": {
+    "name": "Rafiq Alhaj",
+    "tagline": "Penghubung Anda dengan ketua rombongan, dalam bahasa Anda"
+  },
+  "status": {
+    "online": "Daring",
+    "offline": "Luring"
+  },
+  "nav": {
+    "home": "Beranda",
+    "assistant": "Asisten",
+    "myCampaign": "Rombongan",
+    "settings": "Pengaturan",
+    "requests": "Permintaan",
+    "members": "Anggota",
+    "messages": "Pesan"
+  },
   "join": {
     "chooseLang": "Pilih bahasa Anda",
     "code": "Kode rombongan",
@@ -15,7 +29,17 @@
     "errName": "Silakan tulis nama Anda.",
     "errGeneric": "Gagal bergabung. Periksa koneksi lalu coba lagi."
   },
-  "common": { "soon": "Segera hadir", "soonBody": "Fitur ini sedang dikembangkan.", "back": "Kembali", "signOut": "Keluar dari rombongan", "signOutConfirm": "Keluar dari rombongan?", "loading": "Memuat…", "language": "Bahasa", "am": "pagi", "pm": "sore" },
+  "common": {
+    "soon": "Segera hadir",
+    "soonBody": "Fitur ini sedang dikembangkan.",
+    "back": "Kembali",
+    "signOut": "Keluar dari rombongan",
+    "signOutConfirm": "Keluar dari rombongan?",
+    "loading": "Memuat…",
+    "language": "Bahasa",
+    "am": "pagi",
+    "pm": "sore"
+  },
   "home": {
     "hello": "Selamat datang, {name}",
     "assemblyPoint": "Titik kumpul saat ini",
@@ -39,5 +63,39 @@
     "statSharing": "Berbagi lokasi",
     "quickAnnouncement": "Pengumuman cepat",
     "arrivalCheck": "Cek kedatangan"
+  },
+  "newMsg": {
+    "title": "Pesan baru",
+    "to": "Kepada",
+    "all": "Semua",
+    "group": "Grup",
+    "notArrived": "Belum tiba",
+    "notArrivedHint": "Tersedia setelah cek kedatangan",
+    "text": "Pesan (bahasa Arab)",
+    "textPh": "Tulis pesan untuk jamaah…",
+    "priority": "Prioritas",
+    "autoTranslate": "Diterjemahkan otomatis",
+    "translate": "Terjemahkan & pratinjau",
+    "translating": "Menerjemahkan…",
+    "retranslate": "Terjemahkan ulang",
+    "stale": "Teks berubah setelah diterjemahkan",
+    "failed": "Terjemahan otomatis gagal. Ketik terjemahan sendiri, atau kirim dan teks Arab akan ditampilkan.",
+    "editHint": "Periksa terjemahan — bisa diedit sebelum dikirim",
+    "emptyFallback": "Jika kosong, teks Arab yang ditampilkan",
+    "lockTitle": "Pesan baru dari rombongan Anda",
+    "lockBody": "Layar kunci tidak menampilkan nama, lokasi, atau teks",
+    "send": "Kirim",
+    "sending": "Mengirim…",
+    "sendFailed": "Gagal mengirim. Coba lagi.",
+    "sent": "Pesan terkirim"
+  },
+  "priority": {
+    "normal": "Biasa",
+    "important": "Penting",
+    "urgent": "Darurat"
+  },
+  "messages": {
+    "empty": "Belum ada pesan",
+    "newMessage": "Pesan baru"
   }
 }
