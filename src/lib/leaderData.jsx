@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { supabase } from './supabase'
 import { useSession } from './session'
 import { useMembers } from './useMembers'
@@ -15,6 +15,9 @@ export function LeaderDataProvider({ children }) {
   const { members, pilgrims } = useMembers(cid)
   const [messages, setMessages] = useState(null)
   const [acks, setAcks] = useState({})
+  const [helpRequests, setHelpRequests] = useState(null)
+  const helpRef = useRef(helpRequests)
+  helpRef.current = helpRequests
 
   useEffect(() => {
     if (!cid) return
@@ -33,7 +36,14 @@ export function LeaderDataProvider({ children }) {
       for (const r of rows ?? []) (map[r.message_id] ??= {})[r.member_id] = r.acked_at
       setMessages(msgs); setAcks(map)
     }
-    fetchAll()
+    const fetchHelp = async () => {
+      const { data, error } = await supabase.from('help_requests').select('*')
+        .eq('campaign_id', cid).order('created_at', { ascending: false })
+      if (error) console.error('help_requests', error)
+      else if (alive) setHelpRequests(data)
+    }
+    const resync = () => { fetchAll(); fetchHelp() }
+    resync()
 
     const addAck = (r) => setAcks((prev) => ({ ...prev, [r.message_id]: { ...prev[r.message_id], [r.member_id]: r.acked_at } }))
     const stop = subscribeLive(`leader-${cid}`, (ch) => ch
@@ -41,7 +51,8 @@ export function LeaderDataProvider({ children }) {
         ({ new: m }) => setMessages((prev) => (prev?.some((x) => x.id === m.id) ? prev : [m, ...(prev ?? [])])))
       // acknowledgements has no campaign_id column; RLS limits events to this leader's campaign.
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'acknowledgements' }, ({ new: r }) => addAck(r))
-      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'acknowledgements' }, fetchAll), fetchAll)
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'acknowledgements' }, fetchAll)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'help_requests', filter: `campaign_id=eq.${cid}` }, fetchHelp), resync)
 
     return () => { alive = false; stop() }
   }, [cid])
@@ -50,7 +61,22 @@ export function LeaderDataProvider({ children }) {
   const addMessage = useCallback((m) =>
     setMessages((prev) => (prev?.some((x) => x.id === m.id) ? prev : [m, ...(prev ?? [])])), [])
 
-  const value = useMemo(() => ({ messages, acks, members, pilgrims, addMessage }), [messages, acks, members, pilgrims, addMessage])
+  // Leader-only: move a help request to in_progress / resolved (optimistic, reverts on error).
+  const updateRequest = useCallback(async (id, status) => {
+    const before = helpRef.current?.find((r) => r.id === id)?.status
+    setHelpRequests((prev) => prev?.map((r) => (r.id === id ? { ...r, status } : r)))
+    const { error, status: http } = await supabase.from('help_requests').update({ status }).eq('id', id)
+    if (error) {
+      setHelpRequests((prev) => prev?.map((r) => (r.id === id ? { ...r, status: before } : r)))
+      return { error, status: http }
+    }
+    return {}
+  }, [])
+
+  const openRequests = useMemo(() => (helpRequests ?? []).filter((r) => r.status !== 'resolved'), [helpRequests])
+
+  const value = useMemo(() => ({ messages, acks, members, pilgrims, addMessage, helpRequests, openRequests, updateRequest }),
+    [messages, acks, members, pilgrims, addMessage, helpRequests, openRequests, updateRequest])
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }
 

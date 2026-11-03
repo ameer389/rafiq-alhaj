@@ -129,7 +129,7 @@ export function SessionProvider({ children }) {
 
   const signOut = useCallback(async () => {
     await supabase.auth.signOut().catch(() => {})
-    save('rafiq.messages', null); save('rafiq.acked', null)
+    save('rafiq.messages', null); save('rafiq.acked', null); save('rafiq.helpQueue', null)
     applyMember(null, null)
   }, [applyMember])
 

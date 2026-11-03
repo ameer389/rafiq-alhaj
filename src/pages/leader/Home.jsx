@@ -9,6 +9,7 @@ import { useI18n } from '../../i18n'
 import { isAuthError, useSession } from '../../lib/session'
 import { ackStats, arrivalStats, useLeaderData } from '../../lib/leaderData'
 import { isArrival, sendArrivalCheck } from '../../lib/arrival'
+import { isUrgentType } from '../../lib/helpRequests'
 import { useOnline } from '../../lib/useOnline'
 import { fmtTime } from '../../lib/format'
 
@@ -29,7 +30,9 @@ export default function LeaderHome() {
   const navigate = useNavigate()
   const { member, campaign, signOut } = useSession()
   const online = useOnline()
-  const { members, pilgrims, messages, acks, addMessage } = useLeaderData()
+  const { members, pilgrims, messages, acks, addMessage, openRequests } = useLeaderData()
+  const byId = Object.fromEntries(members.map((m) => [m.id, m]))
+  const urgent = openRequests.find((r) => r.status === 'open' && isUrgentType(r.type))
   const [now, setNow] = useState(() => new Date().toISOString())
   useEffect(() => { setNow(new Date().toISOString()) }, [members, acks])
 
@@ -75,11 +78,25 @@ export default function LeaderHome() {
       </DarkHeader>
 
       <div className="flex flex-col gap-4 px-4 py-5">
+        {/* Design 16 — urgent banner: newest open "lost" / "medical" request */}
+        {urgent && (
+          <div className="flex items-center gap-3 rounded-[var(--radius-card)] border border-danger bg-danger-soft p-4">
+            <span className="grid size-12 shrink-0 place-items-center rounded-full bg-danger text-white"><Icon name="siren" className="size-6" /></span>
+            <div className="min-w-0 flex-1">
+              <div className="font-bold text-danger-ink">{t('help.urgent')} · {byId[urgent.member_id]?.name ?? '—'}</div>
+              <div className="text-sm leading-snug text-muted">
+                {t(`help.kind_${urgent.type}`)} · {fmtTime(urgent.created_at, lang, t)}{urgent.location_shared ? ` · ${t('help.sharedLocation')}` : ''}
+              </div>
+            </div>
+            <Link to={`/l/requests#${urgent.id}`} className="shrink-0 rounded-xl bg-danger px-5 py-3 font-bold text-white">{t('help.openBtn')}</Link>
+          </div>
+        )}
+
         <div className="grid grid-cols-3 gap-3">
           <Stat value={pilgrims.length} label={t('leader.statMembers')} />
           <Stat value={arrival.latest ? arrival.count : '—'} label={t('leader.statArrived')} tone="text-success"
             to={arrival.latest ? `/l/m/${arrival.latest.id}` : undefined} />
-          <Stat value="—" label={t('leader.statRequests')} tone="text-gold-ink" />
+          <Stat value={openRequests.length} label={t('leader.statRequests')} tone="text-gold-ink" to="/l/requests" />
         </div>
 
         {/* Live "who understood" counter for the latest announcement */}

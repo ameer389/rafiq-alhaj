@@ -1,10 +1,13 @@
 import { NavLink } from 'react-router-dom'
 import Icon from './Icon'
 import { useI18n } from '../i18n'
+import { useLeaderData } from '../lib/leaderData'
 
 // items: [{ to, icon, label, badge? }]
 export default function BottomNav({ items }) {
   const { t } = useI18n()
+  const leader = useLeaderData() // null on pilgrim screens
+  const badgeFor = (it) => (it.to === '/l/requests' ? leader?.openRequests?.length ?? 0 : it.badge)
   return (
     <nav className="fixed inset-x-0 bottom-0 z-20 mx-auto w-full max-w-[430px] border-t border-line bg-white pb-[env(safe-area-inset-bottom)]">
       <ul className="grid grid-cols-4">
@@ -15,8 +18,8 @@ export default function BottomNav({ items }) {
                 <>
                   <span className={`relative rounded-full px-5 py-1 ${isActive ? 'bg-cream text-gold-ink' : 'text-muted'}`}>
                     <Icon name={it.icon} className="size-6" />
-                    {it.badge > 0 && (
-                      <span className="absolute -top-1.5 end-2 grid size-5 place-items-center rounded-full bg-danger text-xs font-bold text-white">{it.badge}</span>
+                    {badgeFor(it) > 0 && (
+                      <span className="absolute -top-1.5 end-2 grid size-5 place-items-center rounded-full bg-danger text-xs font-bold text-white">{badgeFor(it)}</span>
                     )}
                   </span>
                   <span className={isActive ? 'font-bold text-ink' : 'text-muted'}>{t(it.label)}</span>

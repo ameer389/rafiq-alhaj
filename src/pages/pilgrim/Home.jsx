@@ -7,12 +7,13 @@ import { useI18n } from '../../i18n'
 import { useSession } from '../../lib/session'
 import { usePilgrimMessages } from '../../lib/pilgrimMessages'
 import { LatestMessageCard } from '../../components/MessageCards'
+import { useHelpRequests } from '../../lib/helpRequests'
 
 const TILES = [
   { icon: 'chat', label: 'home.tileAssistant', to: '/p/assistant' },
   { icon: 'route', label: 'home.tileReturn', to: '/p/soon' },
   { icon: 'info', label: 'home.tileServices', to: '/p/soon' },
-  { icon: 'handshake', label: 'home.tileHelp', to: '/p/soon' },
+  { icon: 'handshake', label: 'home.tileHelp', to: '/p/help' },
   { icon: 'users', label: 'home.tileCampaign', to: '/p/campaign' },
   { icon: 'qr', label: 'home.tileCard', to: '/p/soon' },
 ]
@@ -24,6 +25,7 @@ export default function PilgrimHome() {
   const { messages, acked } = usePilgrimMessages()
   const latest = messages[0]
   const latestUnread = latest && !acked.has(latest.id)
+  const queuedCount = useHelpRequests().requests.filter((r) => r.state !== 'sent').length
 
   return (
     <Screen nav={<BottomNav items={PILGRIM_NAV} />}>
@@ -49,7 +51,13 @@ export default function PilgrimHome() {
         <div className="grid grid-cols-3 gap-3">
           {TILES.map((tile) => (
             <Link key={tile.label} to={tile.to}
-              className="flex min-h-32 flex-col gap-3 rounded-[var(--radius-card)] border border-line bg-white p-3.5 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+              className="relative flex min-h-32 flex-col gap-3 rounded-[var(--radius-card)] border border-line bg-white p-3.5 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+              {/* design 03: clock badge = something waiting to be sent */}
+              {tile.to === '/p/help' && queuedCount > 0 && (
+                <span className="absolute end-3 top-3 grid size-8 place-items-center rounded-full bg-cream text-gold-ink" title={t('help.queued')}>
+                  <Icon name="clock" className="size-5" />
+                </span>
+              )}
               <span className="grid size-12 place-items-center rounded-xl bg-mint text-mint-ink">
                 <Icon name={tile.icon} className="size-6" />
               </span>
