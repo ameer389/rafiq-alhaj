@@ -8,6 +8,8 @@ import { isTranslated, messageText, usePilgrimMessages } from '../../lib/pilgrim
 import { useSpeech } from '../../lib/useSpeech'
 import { fmtTime } from '../../lib/format'
 import { PRIORITY_STYLE } from '../leader/Messages'
+import AssemblyCard from '../../components/AssemblyCard'
+import { isArrival } from '../../lib/arrival'
 
 // Designs 09 (English) / 10 (Urdu) / 11 (Arabic) — leader message in the pilgrim's language.
 export default function Message() {
@@ -33,6 +35,7 @@ export default function Message() {
   const text = messageText(m, lang)
   const translated = isTranslated(m, lang)
   const done = acked.has(m.id)
+  const arrival = isArrival(m)
   const sender = leaders[m.sender_id] ?? campaign?.leader_name ?? ''
 
   async function onAck() {
@@ -43,7 +46,7 @@ export default function Message() {
 
   return (
     <Screen>
-      <TopBar title={t('msg.title')} back="/p" />
+      <TopBar title={t(arrival ? 'arrival.title' : 'msg.title')} back="/p" />
 
       <div className="flex flex-col gap-3 px-4 py-5">
         <article className="rounded-[var(--radius-card)] border border-gold-line bg-cream p-5">
@@ -80,6 +83,8 @@ export default function Message() {
           )}
         </article>
 
+        {arrival && <AssemblyCard campaign={campaign} />}
+
         <div className="flex flex-wrap items-center gap-3">
           <button onClick={() => (speaking ? stop() : speak(text))} disabled={!available}
             className="flex items-center gap-2 rounded-2xl border-2 border-line-strong bg-white px-5 py-3 text-lg font-bold disabled:opacity-40">
@@ -92,12 +97,13 @@ export default function Message() {
 
         {done ? (
           <div className="flex items-center justify-center gap-2.5 rounded-2xl bg-mint py-5 text-xl font-bold text-mint-ink">
-            <Icon name="checkCircle" className="size-7" />{t('msg.confirmed')}
+            <Icon name="checkCircle" className="size-7" />{t(arrival ? 'arrival.confirmed' : 'msg.confirmed')}
           </div>
         ) : (
           <button onClick={onAck} disabled={busy}
-            className="flex items-center justify-center gap-3 rounded-2xl bg-navy-800 py-5 text-2xl font-bold text-white disabled:opacity-60">
-            <Icon name="check" className="size-7" strokeWidth={2.5} />{t('msg.gotIt')}
+            className={`flex items-center justify-center gap-3 rounded-2xl py-5 text-2xl font-bold text-white disabled:opacity-60
+              ${arrival ? 'bg-success' : 'bg-navy-800'}`}>
+            <Icon name="check" className="size-7" strokeWidth={2.5} />{t(arrival ? 'arrival.arrived' : 'msg.gotIt')}
           </button>
         )}
         {ackError && <p className="rounded-xl bg-danger-soft px-4 py-3 font-semibold text-danger-ink">{t('msg.ackFailed')}</p>}

@@ -20,6 +20,13 @@ function lookup(dict, key) {
   return key.split('.').reduce((o, k) => (o == null ? undefined : o[k]), dict)
 }
 
+// Translate in a specific language (outside the current UI language) — e.g. ready-made arrival-check texts.
+export function tIn(lang, key, vars) {
+  let s = lookup(DICTS[lang], key) ?? lookup(DICTS.ar, key) ?? key
+  if (vars) for (const [k, v] of Object.entries(vars)) s = s.replaceAll(`{${k}}`, v)
+  return s
+}
+
 const I18nCtx = createContext(null)
 
 export function I18nProvider({ children }) {

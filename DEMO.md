@@ -25,3 +25,4 @@ Needs `.env.local` with `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
 2. Leader taps **إعلان سريع**, types Arabic (e.g. "انتظروا عند البوابة ٣، المشرف في طريقه إليكم"), taps **ترجمة ومعاينة** (~3 s), shows the Urdu/English/Indonesian preview, taps **إرسال**.
 3. Phone B instantly shows the message in Urdu on its home → tap **پڑھیں** → **سنیں** (listen) / **اصل متن دیکھیں** (original) → **سمجھ گیا**.
 4. Leader home: the "آخر رسالة" counter jumps (e.g. 5/8 → 6/8 فهموا). Tap it → list of who hasn't confirmed yet.
+5. _(bonus)_ Leader taps **طلب تأكيد الوصول** → phone B shows a green **میں پہنچ گیا** button on its home → tap → leader sees "1 / 8 وصلوا" live. Then **إعلان سريع** → **لم يصلوا · 7** sends a reminder only to those who haven't arrived.

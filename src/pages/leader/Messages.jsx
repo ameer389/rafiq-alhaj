@@ -7,6 +7,7 @@ import { Screen, TopBar } from '../../components/Layout'
 import { useI18n } from '../../i18n'
 import { ackStats, useLeaderData } from '../../lib/leaderData'
 import { fmtTime } from '../../lib/format'
+import { isArrival, recipientsOf, translationLangs } from '../../lib/arrival'
 
 export const PRIORITY_STYLE = {
   normal: 'bg-chip text-muted',
@@ -42,21 +43,29 @@ export default function Messages() {
         {messages === null && <p className="py-8 text-center text-muted">{t('common.loading')}</p>}
         {messages?.length === 0 && <p className="py-8 text-center text-muted">{t('messages.empty')}</p>}
         {messages?.map((m) => {
-          const { count, total } = ackStats(m.id, acks, pilgrims)
+          const { count, total } = ackStats(m, acks, pilgrims)
+          const arrival = isArrival(m)
+          const to = recipientsOf(m)
           return (
             <Link key={m.id} to={`/l/m/${m.id}`} className="block rounded-[var(--radius-card)] border border-line bg-white p-4">
               <div className="mb-2 flex items-center justify-between gap-2">
-                <span className={`rounded-full px-3 py-1 text-sm font-bold ${PRIORITY_STYLE[m.priority] ?? PRIORITY_STYLE.normal}`}>
-                  {t(`priority.${m.priority}`)}
-                </span>
+                {arrival ? (
+                  <span className="flex items-center gap-1.5 rounded-full bg-mint px-3 py-1 text-sm font-bold text-mint-ink">
+                    <Icon name="userCheck" className="size-4" />{t('arrival.title')}
+                  </span>
+                ) : (
+                  <span className={`rounded-full px-3 py-1 text-sm font-bold ${PRIORITY_STYLE[m.priority] ?? PRIORITY_STYLE.normal}`}>
+                    {t(`priority.${m.priority}`)}
+                  </span>
+                )}
                 <span className="text-sm text-muted">{fmtTime(m.created_at, lang, t)}</span>
               </div>
-              <p dir="rtl" className="mb-3 text-lg leading-relaxed">{m.original_text}</p>
-              <AckCounter count={count} total={total} />
+              <p dir="rtl" className="mb-1 text-lg leading-relaxed">{m.original_text}</p>
+              {to && <p className="text-sm font-semibold text-gold-ink">{t('arrival.toNotArrived', { n: to.length })}</p>}
+              <div className="mt-3"><AckCounter count={count} total={total} label={arrival ? 'arrival.label' : 'acks.understood'} /></div>
               <div className="mt-2 flex items-center justify-between text-sm">
                 <span className="flex items-center gap-1.5 text-mint-ink">
-                  <Icon name="languages" className="size-4" />
-                  {Object.keys(m.translations ?? {}).filter((l) => l !== 'ar').join(' · ').toUpperCase()}
+                  {!arrival && <><Icon name="languages" className="size-4" />{translationLangs(m).join(' · ').toUpperCase()}</>}
                 </span>
                 <span className="flex items-center gap-1 font-bold text-navy-800">
                   {t('acks.details')}<Icon name="chevronLeft" className="size-4 ltr:-scale-x-100" />

@@ -131,5 +131,18 @@
     "title": "تفاصيل الرسالة",
     "translations": "الترجمات المرسلة",
     "live": "مباشر"
+  },
+  "arrival": {
+    "request": "أكّد وصولك إلى نقطة التجمع",
+    "title": "طلب تأكيد الوصول",
+    "arrived": "وصلت",
+    "confirmed": "تم تسجيل وصولك — شكرًا",
+    "label": "وصلوا",
+    "notArrived": "لم يصلوا بعد",
+    "arrivedList": "وصلوا",
+    "allArrived": "الجميع وصلوا",
+    "sending": "جارٍ الإرسال…",
+    "detailTitle": "تأكيد الوصول",
+    "toNotArrived": "إلى من لم يصلوا · {n}"
   }
 }

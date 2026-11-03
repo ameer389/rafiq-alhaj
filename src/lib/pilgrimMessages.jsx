@@ -2,6 +2,8 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import { supabase } from './supabase'
 import { load, save } from './storage'
 import { useSession } from './session'
+import { isArrival, isForMember } from './arrival'
+import { subscribeLive } from './live'
 
 // Pilgrim side: campaign messages + which ones I confirmed + leader names.
 // Live via Realtime, cached in localStorage so messages open offline.
@@ -20,6 +22,13 @@ export function PilgrimMessagesProvider({ children }) {
   useEffect(() => {
     if (!cid || !mid) return
     let alive = true
+    let known = null // ids seen so far; null until the first fetch (so old messages don't pop a banner)
+
+    const announce = (msg) => {
+      setIncoming(msg)
+      try { navigator.vibrate?.([200, 100, 200]) } catch { /* not allowed before first tap */ }
+    }
+
     const fetchAll = async () => {
       const [m, a, l] = await Promise.all([
         supabase.from('messages').select('*').eq('campaign_id', cid).order('created_at', { ascending: false }),
@@ -27,31 +36,29 @@ export function PilgrimMessagesProvider({ children }) {
         supabase.from('members').select('id,name').eq('campaign_id', cid).eq('role', 'leader'),
       ])
       if (!alive) return
-      if (m.error) console.error('messages', m.error); else setMessages(m.data)
+      if (m.error) console.error('messages', m.error)
+      else {
+        const mine = m.data.filter((x) => isForMember(x, mid))
+        // A message Realtime missed but polling found → still show the "new message" banner.
+        if (known) { const fresh = mine.find((x) => !known.has(x.id)); if (fresh) announce(fresh) }
+        known = new Set(mine.map((x) => x.id))
+        setMessages(mine)
+      }
       if (a.error) console.error('acks', a.error)
       else { const s = new Set(a.data.map((x) => x.message_id)); setAcked(s); save('rafiq.acked', [...s]) }
       if (!l.error) setLeaders(Object.fromEntries(l.data.map((x) => [x.id, x.name])))
     }
     fetchAll()
 
-    const ch = supabase.channel(`pilgrim-messages-${cid}-${Math.random().toString(36).slice(2)}`)
+    const stop = subscribeLive(`pilgrim-messages-${cid}`, (ch) => ch
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `campaign_id=eq.${cid}` }, ({ new: msg }) => {
+        if (!isForMember(msg, mid)) return // addressed to other pilgrims (e.g. "not arrived")
+        known?.add(msg.id)
         setMessages((prev) => (prev.some((x) => x.id === msg.id) ? prev : [msg, ...prev]))
-        setIncoming(msg)
-        navigator.vibrate?.([200, 100, 200])
-      })
-      .subscribe()
+        announce(msg)
+      }), fetchAll)
 
-    // Catch up on anything missed while offline / in background.
-    const refresh = () => document.visibilityState === 'visible' && fetchAll()
-    window.addEventListener('online', fetchAll)
-    document.addEventListener('visibilitychange', refresh)
-    return () => {
-      alive = false
-      supabase.removeChannel(ch)
-      window.removeEventListener('online', fetchAll)
-      document.removeEventListener('visibilitychange', refresh)
-    }
+    return () => { alive = false; stop() }
   }, [cid, mid])
 
   useEffect(() => { save('rafiq.messages', messages.slice(0, 30)) }, [messages])
@@ -77,4 +84,5 @@ export function messageText(m, lang) {
   if (lang === 'ar') return m.original_text
   return m.translations?.[lang] || m.original_text
 }
-export const isTranslated = (m, lang) => lang !== 'ar' && !!m.translations?.[lang]
+// Arrival checks are written natively in every language — no "translated from Arabic" footer.
+export const isTranslated = (m, lang) => lang !== 'ar' && !isArrival(m) && !!m.translations?.[lang]

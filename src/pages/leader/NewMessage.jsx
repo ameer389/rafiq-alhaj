@@ -5,7 +5,7 @@ import Segmented from '../../components/Segmented'
 import { Screen, TopBar } from '../../components/Layout'
 import { isRtl, langLabel, useI18n } from '../../i18n'
 import { isAuthError, useSession } from '../../lib/session'
-import { useMembers } from '../../lib/useMembers'
+import { arrivalStats, useLeaderData } from '../../lib/leaderData'
 import { supabase } from '../../lib/supabase'
 import { translateText } from '../../lib/translate'
 
@@ -16,8 +16,12 @@ export default function NewMessage() {
   const { t } = useI18n()
   const navigate = useNavigate()
   const { member, campaign, refreshMembership, signOut } = useSession()
-  const { pilgrims } = useMembers(campaign?.id)
+  const { pilgrims, messages, acks, addMessage } = useLeaderData()
+  const arrival = arrivalStats(messages, acks, pilgrims)
+  const canTargetNotArrived = !!arrival.latest && arrival.pending.length > 0
 
+  const [to, setTo] = useState('all') // all | notArrived
+  const audience = to === 'notArrived' && canTargetNotArrived ? arrival.pending : pilgrims
   const [text, setText] = useState('')
   const [priority, setPriority] = useState('normal')
   const [translations, setTranslations] = useState(null) // { ur, en, id } once previewed
@@ -28,9 +32,9 @@ export default function NewMessage() {
   // Languages actually used in this campaign (+ member counts), Arabic excluded.
   const langCounts = useMemo(() => {
     const c = {}
-    for (const p of pilgrims) if (p.lang !== 'ar') c[p.lang] = (c[p.lang] ?? 0) + 1
+    for (const p of audience) if (p.lang !== 'ar') c[p.lang] = (c[p.lang] ?? 0) + 1
     return c
-  }, [pilgrims])
+  }, [audience])
   const targets = useMemo(() => {
     const present = ALL_TARGETS.filter((l) => langCounts[l])
     return present.length ? present : ALL_TARGETS
@@ -60,10 +64,12 @@ export default function NewMessage() {
     setStatus('sending'); setSendError(null)
     const final = { ar: trimmed }
     for (const [l, v] of Object.entries(translations ?? {})) if (v.trim()) final[l] = v.trim()
-    const { error, status: httpStatus } = await supabase.from('messages').insert({
+    // Recipient subset lives in translations._to (no schema change); absent = everyone.
+    if (audience !== pilgrims) final._to = audience.map((p) => p.id)
+    const { data: sent, error, status: httpStatus } = await supabase.from('messages').insert({
       campaign_id: member.campaign_id, sender_id: member.id,
       original_text: trimmed, translations: final, priority, kind: 'announcement',
-    })
+    }).select().single()
     if (error) {
       console.error(error)
       setStatus('idle')
@@ -76,6 +82,7 @@ export default function NewMessage() {
       }
       return
     }
+    addMessage(sent)
     navigate('/l/messages', { state: { sent: true } })
   }
 
@@ -89,10 +96,14 @@ export default function NewMessage() {
       <div className="flex flex-col gap-4 px-4 pb-32 pt-5">
         <section>
           <h2 className="mb-2 text-lg font-bold">{t('newMsg.to')}</h2>
-          <Segmented value="all" onChange={() => {}} options={[
+          <Segmented value={canTargetNotArrived ? to : 'all'} onChange={setTo} options={[
             { value: 'all', label: `${t('newMsg.all')} · ${pilgrims.length}` },
             { value: 'group', label: t('newMsg.group'), disabled: true, title: t('common.soon') },
-            { value: 'notArrived', label: t('newMsg.notArrived'), disabled: true, title: t('newMsg.notArrivedHint') },
+            {
+              value: 'notArrived',
+              label: canTargetNotArrived ? `${t('newMsg.notArrived')} · ${arrival.pending.length}` : t('newMsg.notArrived'),
+              disabled: !canTargetNotArrived, title: canTargetNotArrived ? undefined : t('newMsg.notArrivedHint'),
+            },
           ]} />
         </section>
 

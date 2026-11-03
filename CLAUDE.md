@@ -143,7 +143,7 @@ Commit after each one with a working app. Mark ✅ here when done.
 3. [x] ✅ Leader live counter: on leader home (design 16) and per message — "32/40 فهموا" + list of who hasn't confirmed.
 
 **P1 — if time allows (in order)**
-4. [ ] Arrival check: leader taps "طلب تأكيد الوصول" → message with `kind='arrival_check'` → pilgrim taps "وصلت" → leader sees "39/48 وصلوا".
+4. [x] ✅ Arrival check: leader taps "طلب تأكيد الوصول" → message with `kind='arrival_check'` → pilgrim taps "وصلت" → leader sees "39/48 وصلوا".
 5. [ ] My campaign (design 15): leader name/phone (tap to call `tel:`), hotel, camp, assembly point + time, last updated. Cache in localStorage so it opens offline.
 6. [ ] Connection status chip on every screen (`online`/`offline` events).
 7. [ ] Offline help request: pilgrim creates a request → saved in a localStorage queue with status "لم يُرسل بعد" → auto-sent on `online` event (idempotent via `client_id`) → status "تم الإرسال". Leader sees it live under الطلبات.

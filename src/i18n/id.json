@@ -131,5 +131,18 @@
     "title": "Detail pesan",
     "translations": "Terjemahan terkirim",
     "live": "Langsung"
+  },
+  "arrival": {
+    "request": "Mohon konfirmasi bahwa Anda sudah tiba di titik kumpul",
+    "title": "Cek kedatangan",
+    "arrived": "Saya sudah tiba",
+    "confirmed": "Kedatangan Anda tercatat — terima kasih",
+    "label": "tiba",
+    "notArrived": "Belum tiba",
+    "arrivedList": "Sudah tiba",
+    "allArrived": "Semua sudah tiba",
+    "sending": "Mengirim…",
+    "detailTitle": "Cek kedatangan",
+    "toNotArrived": "Untuk yang belum tiba · {n}"
   }
 }

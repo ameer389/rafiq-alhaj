@@ -131,5 +131,18 @@
     "title": "Message details",
     "translations": "Sent translations",
     "live": "Live"
+  },
+  "arrival": {
+    "request": "Please confirm you have arrived at the assembly point",
+    "title": "Arrival check",
+    "arrived": "I've arrived",
+    "confirmed": "Your arrival is recorded — thank you",
+    "label": "arrived",
+    "notArrived": "Not arrived yet",
+    "arrivedList": "Arrived",
+    "allArrived": "Everyone has arrived",
+    "sending": "Sending…",
+    "detailTitle": "Arrival check",
+    "toNotArrived": "To not arrived · {n}"
   }
 }

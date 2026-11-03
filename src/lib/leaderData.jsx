@@ -1,7 +1,9 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { supabase } from './supabase'
 import { useSession } from './session'
 import { useMembers } from './useMembers'
+import { isArrival, recipientsOf } from './arrival'
+import { subscribeLive } from './live'
 
 // Leader side: all campaign messages + who confirmed each one, kept live via Realtime.
 // acks = { [messageId]: { [memberId]: acked_at } }
@@ -34,35 +36,40 @@ export function LeaderDataProvider({ children }) {
     fetchAll()
 
     const addAck = (r) => setAcks((prev) => ({ ...prev, [r.message_id]: { ...prev[r.message_id], [r.member_id]: r.acked_at } }))
-    const ch = supabase.channel(`leader-${cid}-${Math.random().toString(36).slice(2)}`)
+    const stop = subscribeLive(`leader-${cid}`, (ch) => ch
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `campaign_id=eq.${cid}` },
         ({ new: m }) => setMessages((prev) => (prev?.some((x) => x.id === m.id) ? prev : [m, ...(prev ?? [])])))
       // acknowledgements has no campaign_id column; RLS limits events to this leader's campaign.
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'acknowledgements' }, ({ new: r }) => addAck(r))
-      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'acknowledgements' }, fetchAll)
-      .subscribe()
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'acknowledgements' }, fetchAll), fetchAll)
 
-    const refresh = () => document.visibilityState === 'visible' && fetchAll()
-    window.addEventListener('online', fetchAll)
-    document.addEventListener('visibilitychange', refresh)
-    return () => {
-      alive = false
-      supabase.removeChannel(ch)
-      window.removeEventListener('online', fetchAll)
-      document.removeEventListener('visibilitychange', refresh)
-    }
+    return () => { alive = false; stop() }
   }, [cid])
 
-  const value = useMemo(() => ({ messages, acks, members, pilgrims }), [messages, acks, members, pilgrims])
+  // Add a message we just sent without waiting for the Realtime echo.
+  const addMessage = useCallback((m) =>
+    setMessages((prev) => (prev?.some((x) => x.id === m.id) ? prev : [m, ...(prev ?? [])])), [])
+
+  const value = useMemo(() => ({ messages, acks, members, pilgrims, addMessage }), [messages, acks, members, pilgrims, addMessage])
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }
 
 export const useLeaderData = () => useContext(Ctx)
 
-// Counter for one message: confirmed / total pilgrims, plus who hasn't confirmed.
-export function ackStats(messageId, acks, pilgrims) {
-  const byMember = acks[messageId] ?? {}
-  const confirmed = pilgrims.filter((p) => byMember[p.id])
-  const pending = pilgrims.filter((p) => !byMember[p.id])
-  return { confirmed, pending, count: confirmed.length, total: pilgrims.length, byMember }
+// Counter for one message: confirmed / total recipients, plus who hasn't confirmed.
+// For an arrival check, "confirmed" = arrived.
+export function ackStats(m, acks, pilgrims) {
+  if (!m) return { confirmed: [], pending: [], count: 0, total: 0, byMember: {} }
+  const byMember = acks[m.id] ?? {}
+  const to = recipientsOf(m)
+  const audience = to ? pilgrims.filter((p) => to.includes(p.id)) : pilgrims
+  const confirmed = audience.filter((p) => byMember[p.id])
+  const pending = audience.filter((p) => !byMember[p.id])
+  return { confirmed, pending, count: confirmed.length, total: audience.length, byMember }
+}
+
+// Latest arrival check + who hasn't arrived (drives "وصلوا" on home and the "لم يصلوا" recipients).
+export function arrivalStats(messages, acks, pilgrims) {
+  const latest = messages?.find(isArrival) ?? null
+  return { latest, ...ackStats(latest, acks, pilgrims) }
 }

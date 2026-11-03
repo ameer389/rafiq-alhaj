@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { supabase } from './supabase'
+import { subscribeLive } from './live'
 
 // All members of the campaign, kept live via Realtime.
 export function useMembers(campaignId) {
@@ -14,10 +15,9 @@ export function useMembers(campaignId) {
       else if (alive) setMembers(data)
     }
     fetchAll()
-    const ch = supabase.channel(`members-${campaignId}-${Math.random().toString(36).slice(2)}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'members', filter: `campaign_id=eq.${campaignId}` }, fetchAll)
-      .subscribe()
-    return () => { alive = false; supabase.removeChannel(ch) }
+    const stop = subscribeLive(`members-${campaignId}`, (ch) => ch
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'members', filter: `campaign_id=eq.${campaignId}` }, fetchAll), fetchAll)
+    return () => { alive = false; stop() }
   }, [campaignId])
 
   const pilgrims = useMemo(() => members.filter((m) => m.role === 'pilgrim'), [members])

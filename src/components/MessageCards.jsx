@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { isArrival } from '../lib/arrival'
 import Icon from './Icon'
 import { isRtl, useI18n } from '../i18n'
 import { messageText, usePilgrimMessages } from '../lib/pilgrimMessages'
@@ -14,17 +16,46 @@ function MsgText({ m, className = '' }) {
   )
 }
 
+// Unconfirmed arrival check on pilgrim home: one big "وصلت" tap, no navigation needed.
+function ArrivalCard({ m }) {
+  const { t, lang } = useI18n()
+  const { ack } = usePilgrimMessages()
+  const [busy, setBusy] = useState(false)
+  const [failed, setFailed] = useState(false)
+  async function onArrived() {
+    setBusy(true); setFailed(false)
+    try { await ack(m.id) } catch (e) { console.error(e); setFailed(true) }
+    setBusy(false)
+  }
+  return (
+    <div className="rounded-[var(--radius-card)] border-2 border-success/40 bg-mint p-4">
+      <div className="mb-2 flex items-center gap-2">
+        <Icon name="userCheck" className="size-5 text-mint-ink" />
+        <span className="font-bold text-mint-ink">{t('arrival.title')}</span>
+        <span className="ms-auto text-sm text-muted">{fmtTime(m.created_at, lang, t)}</span>
+      </div>
+      <MsgText m={m} className="text-lg font-semibold" />
+      <button onClick={onArrived} disabled={busy}
+        className="mt-3 flex w-full items-center justify-center gap-2.5 rounded-xl bg-success py-4 text-2xl font-bold text-white disabled:opacity-60">
+        <Icon name="check" className="size-7" strokeWidth={2.5} />{t('arrival.arrived')}
+      </button>
+      {failed && <p className="mt-2 text-sm font-semibold text-danger-ink">{t('msg.ackFailed')}</p>}
+    </div>
+  )
+}
+
 // Design 04 — "آخر إعلان من القائد" card on pilgrim home.
 export function LatestMessageCard({ m }) {
   const { t, lang } = useI18n()
   const { acked } = usePilgrimMessages()
   const unread = !acked.has(m.id)
+  if (unread && isArrival(m)) return <ArrivalCard m={m} />
   return (
     <Link to={`/p/m/${m.id}`}
       className={`block rounded-[var(--radius-card)] border p-4 ${unread ? 'border-gold-line bg-cream-2 ring-2 ring-gold/40' : 'border-line bg-white'}`}>
       <div className="mb-2 flex items-center gap-2">
         <Icon name="megaphone" className="size-5 text-gold-ink" />
-        <span className="font-bold text-gold-ink">{unread ? t('msg.newBanner') : t('msg.latest')}</span>
+        <span className="font-bold text-gold-ink">{isArrival(m) ? t('arrival.title') : unread ? t('msg.newBanner') : t('msg.latest')}</span>
         {unread && <span className="rounded-full bg-danger px-2 py-0.5 text-xs font-bold text-white">{t('msg.isNew')}</span>}
         <span className="ms-auto text-sm text-muted">{fmtTime(m.created_at, lang, t)}</span>
       </div>
@@ -50,7 +81,7 @@ export function IncomingBanner() {
         className="flex items-center gap-3 rounded-2xl bg-navy-900 p-4 text-white shadow-xl">
         <span className="grid size-10 shrink-0 place-items-center rounded-full bg-gold text-navy-900"><Icon name="megaphone" className="size-5" /></span>
         <div className="min-w-0 flex-1">
-          <div className="font-bold">{t('msg.newBanner')}</div>
+          <div className="font-bold">{t(isArrival(incoming) ? 'arrival.title' : 'msg.newBanner')}</div>
           <MsgText m={incoming} className="truncate text-white/80" />
         </div>
       </Link>
