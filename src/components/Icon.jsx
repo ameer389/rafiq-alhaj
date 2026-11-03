@@ -36,6 +36,7 @@ const P = {
   mapPin: <><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" /><circle cx="12" cy="10" r="3" /></>,
   userPlus: <><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M19 8v6" /><path d="M22 11h-6" /></>,
   chevronRight: <path d="m9 18 6-6-6-6" />,
+  navigation: <path d="M12 2 19 21 12 17 5 21 12 2Z" />,
 }
 
 export default function Icon({ name, className = 'size-5', strokeWidth = 2 }) {

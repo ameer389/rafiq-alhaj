@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import Icon from '../../components/Icon'
 import { Screen, TopBar } from '../../components/Layout'
 import { BottomSheet, Button, IconCircle, Notice } from '../../components/ui'
@@ -8,22 +8,33 @@ import { useI18n } from '../../i18n'
 import { useSession } from '../../lib/session'
 import { getLocationOnce, useHelpRequests } from '../../lib/helpRequests'
 import { useOnline } from '../../lib/useOnline'
-import { useSoon } from '../../lib/toast'
+import { geoPermission } from '../../lib/geo'
 import { fmtTime } from '../../lib/format'
 
 // Screen 14 — «أنا ضائع»: calm him down, remind him of the assembly point, then two choices.
 // «أرسلوا لي أحدًا» → consent sheet (20 / 21 offline) → help request (status page 22–27).
-// «أرني الطريق» is feature 8 (phase 6) — «قريبًا» until then.
+// «أرني الطريق» → screen 15 (location stays on the phone) → route 16/17, or the organizer card 18.
 export default function Lost() {
   const { t, lang } = useI18n()
   const navigate = useNavigate()
   const { campaign } = useSession()
   const { active, submit } = useHelpRequests()
   const online = useOnline()
-  const soon = useSoon()
+  const [params] = useSearchParams()
+  const [wayConsent, setWayConsent] = useState(false)
   const callLeader = useCallLeader()
   const [consent, setConsent] = useState(false)
   const [locating, setLocating] = useState(false)
+
+  // Screen 15 is asked once; if the browser already decided, go straight on.
+  async function showWay() {
+    const p = await geoPermission()
+    if (p === 'granted') navigate('/p/route')
+    else if (p === 'denied') navigate('/p/route?denied=1')
+    else setWayConsent(true)
+  }
+  // «ما زلت ضائعاً؟ أرسلوا لي أحداً» from the route screen lands here with ?send=1
+  useEffect(() => { if (params.has('send')) sendSomeone() }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   function sendSomeone() {
     if (active) return navigate(`/p/help/${active.client_id}`) // one request at a time
@@ -45,7 +56,7 @@ export default function Lost() {
           {campaign?.assembly_time && ` · ${fmtTime(campaign.assembly_time, lang, t, { long: true })}`}
         </p>
 
-        <button type="button" onClick={soon}
+        <button type="button" onClick={showWay}
           className="flex min-h-[6.5rem] items-center gap-4 rounded-[var(--radius-hero)] bg-primary px-5 text-start text-white">
           <span className="grid size-16 shrink-0 place-items-center rounded-full bg-white/15"><Icon name="compass" className="size-8" /></span>
           <span className="text-[1.6rem] font-bold">{t('req.showWay')}</span>
@@ -67,6 +78,14 @@ export default function Lost() {
         <div className="mt-5 flex flex-col gap-3">
           <Button onClick={() => send(true)} disabled={locating}>{locating ? t('req.locating') : t('req.consentYes')}</Button>
           <Button variant="secondary" onClick={() => send(false)} disabled={locating}>{t('req.consentNo')}</Button>
+        </div>
+      </BottomSheet>
+      {/* Screen 15 — first location consent: only to show the way, never sent */}
+      <BottomSheet open={wayConsent} onClose={() => setWayConsent(false)} title={t('way.permTitle')}>
+        <p className="text-lg text-muted">{t('way.permBody')}</p>
+        <div className="mt-5 flex flex-col gap-3">
+          <Button onClick={() => navigate('/p/route')}>{t('way.yes')}</Button>
+          <Button variant="secondary" onClick={() => navigate('/p/route?declined=1')}>{t('way.noThanks')}</Button>
         </div>
       </BottomSheet>
       {callLeader.sheet}

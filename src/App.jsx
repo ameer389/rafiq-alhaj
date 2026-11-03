@@ -9,6 +9,7 @@ import Message from './pages/pilgrim/Message'
 import Campaign from './pages/pilgrim/Campaign'
 import HelpStatus, { HelpIndex } from './pages/pilgrim/Help'
 import Lost from './pages/pilgrim/Lost'
+import RouteScreen from './pages/pilgrim/Route'
 import { HelpRequestsProvider } from './lib/helpRequests'
 import { PilgrimMessagesProvider } from './lib/pilgrimMessages'
 import { IncomingBanner } from './components/MessageCards'
@@ -59,6 +60,7 @@ export default function App() {
       <Route path="/p/messages" element={<Navigate to="/p/campaign" replace />} />
       <Route path="/p/campaign" element={<Campaign />} />
       <Route path="/p/lost" element={<Lost />} />
+      <Route path="/p/route" element={<RouteScreen />} />
       <Route path="/p/help" element={<HelpIndex />} />
       <Route path="/p/help/:cid" element={<HelpStatus />} />
       <Route path="/p/settings" element={<Navigate to="/p/campaign" replace />} />
