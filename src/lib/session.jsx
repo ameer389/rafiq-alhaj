@@ -12,6 +12,7 @@ import { subscribeLive } from './live'
 // re-fetches the member, so the UI always matches the real role. For leader + pilgrim
 // side by side, use two browsers or a private window.
 const SessionCtx = createContext(null)
+const LEFT_KEY = 'rafiq.left' // set when the user leaves the campaign on this device (auth session is kept)
 
 async function fetchMembership(userId) {
   const { data: m, error } = await supabase.from('members').select('*').eq('user_id', userId).maybeSingle()
@@ -71,6 +72,9 @@ export function SessionProvider({ children }) {
     const mySeq = seq.current
     const { data: { session } } = await supabase.auth.getSession()
     if (!session) { if (apply && seq.current === mySeq) applyMember(null, null); return null }
+    // The user left the campaign on this device: the member row still exists (same anonymous user,
+    // reused on re-join), but don't log him back in — stay on the join screen until he joins again.
+    if (load(LEFT_KEY)) { if (apply && memberRef.current && !hold.current) applyMember(null, null); return null }
     const { m, c } = await fetchMembership(session.user.id)
     if (apply && seq.current === mySeq && !hold.current) applyMember(m, c)
     return m
@@ -154,7 +158,7 @@ export function SessionProvider({ children }) {
       }
       const member = Array.isArray(m) ? m[0] : m
       const { data: c } = await supabase.from('campaigns').select('*').eq('id', member.campaign_id).maybeSingle()
-      if (!defer) { hold.current = false; applyMember(member, c) }
+      if (!defer) { hold.current = false; save(LEFT_KEY, null); applyMember(member, c) }
       return { member, campaign: c }
     } catch (e) {
       console.error(e)
@@ -164,7 +168,7 @@ export function SessionProvider({ children }) {
     }
   }, [applyMember])
 
-  const finishJoin = useCallback((m, c) => { hold.current = false; campaignRef.current = c; applyMember(m, c) }, [applyMember])
+  const finishJoin = useCallback((m, c) => { hold.current = false; save(LEFT_KEY, null); campaignRef.current = c; applyMember(m, c) }, [applyMember])
   const cancelOnboarding = useCallback(() => { hold.current = false }, [])
 
   // Screen 12: live campaign updates (leader edits assembly time/point — screen 53).
@@ -192,9 +196,15 @@ export function SessionProvider({ children }) {
 
   const dismissAssemblyAlert = useCallback(() => { save('rafiq.assemblyAlert', null); setAssemblyAlert(null) }, [])
 
+  // «الخروج من الحملة» — leave the campaign ON THIS DEVICE only. The anonymous Supabase user is KEPT,
+  // so joining again (any code) reuses the same member row (join_campaign upserts on user_id): the
+  // leader's member count doesn't grow. Other tabs follow via the storage event on 'rafiq.member'.
   const signOut = useCallback(async () => {
-    await supabase.auth.signOut().catch(() => {})
-    save('rafiq.messages', null); save('rafiq.acked', null); save('rafiq.helpQueue', null); save('rafiq.pendingLang', null)
+    hold.current = false
+    const m = memberRef.current
+    if (m) supabase.from('members').update({ shared_lat: null, shared_lng: null, location_shared_at: null }).eq('id', m.id).then(() => {}, () => {})
+    for (const k of ['rafiq.messages', 'rafiq.acked', 'rafiq.helpQueue', 'rafiq.pendingLang', 'rafiq.sharingLocation']) save(k, null)
+    save(LEFT_KEY, true)
     applyMember(null, null)
   }, [applyMember])
 
