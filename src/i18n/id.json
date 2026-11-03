@@ -89,7 +89,8 @@
     "sendFailed": "Gagal mengirim. Coba lagi.",
     "sent": "Pesan terkirim",
     "leaderSessionEnded": "Sesi ketua Anda berakhir — silakan masuk lagi",
-    "signInAgain": "Masuk lagi"
+    "signInAgain": "Masuk lagi",
+    "fallbackNote": "Terjemahan cadangan — sebaiknya diperiksa"
   },
   "priority": {
     "normal": "Biasa",
@@ -144,5 +145,23 @@
     "sending": "Mengirim…",
     "detailTitle": "Cek kedatangan",
     "toNotArrived": "Untuk yang belum tiba · {n}"
+  },
+  "campaign": {
+    "title": "Info rombongan",
+    "leader": "Ketua rombongan",
+    "phone": "Nomor ketua",
+    "call": "Telepon ketua",
+    "hotel": "Hotel",
+    "camp": "Tenda",
+    "assembly": "Titik kumpul & waktu",
+    "updatedByLeader": "Terakhir diperbarui ketua",
+    "lastSync": "Sinkronisasi terakhir",
+    "refresh": "Perbarui",
+    "refreshing": "Memperbarui…",
+    "refreshFailed": "Gagal memperbarui. Coba lagi.",
+    "offlineNote": "Anda luring — info ini tersimpan di perangkat",
+    "today": "Hari ini",
+    "yesterday": "Kemarin",
+    "never": "Belum"
   }
 }

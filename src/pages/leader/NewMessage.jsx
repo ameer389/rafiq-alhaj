@@ -28,6 +28,7 @@ export default function NewMessage() {
   const [translatedFrom, setTranslatedFrom] = useState('')
   const [status, setStatus] = useState('idle') // idle | translating | failed | sending
   const [sendError, setSendError] = useState(null) // i18n key
+  const [usedFallback, setUsedFallback] = useState(false) // backup translator (MyMemory) was used
 
   // Languages actually used in this campaign (+ member counts), Arabic excluded.
   const langCounts = useMemo(() => {
@@ -47,8 +48,9 @@ export default function NewMessage() {
     if (!trimmed) return
     setStatus('translating')
     try {
-      const tr = await translateText(trimmed, targets)
-      setTranslations(Object.fromEntries(targets.map((l) => [l, tr[l] ?? ''])))
+      const { translations: tr, fallback } = await translateText(trimmed, targets)
+      setTranslations(Object.fromEntries(targets.map((l) => [l, typeof tr[l] === 'string' ? tr[l] : ''])))
+      setUsedFallback(fallback)
       setStatus('idle')
     } catch (e) {
       console.warn('translate failed', e)
@@ -135,6 +137,12 @@ export default function NewMessage() {
 
           {status === 'failed' && (
             <p className="mt-3 rounded-xl bg-white/70 px-3 py-2 text-sm font-semibold text-danger-ink">{t('newMsg.failed')}</p>
+          )}
+
+          {usedFallback && status !== 'failed' && (
+            <p className="mt-3 flex items-center gap-2 rounded-xl border border-warn-line bg-warn px-3 py-2 text-sm font-semibold text-warn-ink">
+              <Icon name="info" className="size-4 shrink-0" />{t('newMsg.fallbackNote')}
+            </p>
           )}
 
           {translations && (

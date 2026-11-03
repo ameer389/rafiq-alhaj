@@ -26,6 +26,7 @@ export function SessionProvider({ children }) {
   const [member, setMember] = useState(() => load('rafiq.member'))
   const [campaign, setCampaign] = useState(() => load('rafiq.campaign'))
   const [loading, setLoading] = useState(true)
+  const [syncedAt, setSyncedAt] = useState(() => load('rafiq.syncedAt'))
   const memberRef = useRef(member)
   const seq = useRef(0)        // bumps on every change; stale async results are dropped
   const joining = useRef(false)
@@ -37,9 +38,12 @@ export function SessionProvider({ children }) {
     if (m?.lang) setLang(m.lang)
   }, [setLang])
 
+  // Called with fresh server data (initial load, refresh, join) or null (signed out).
   const applyMember = useCallback((m, c) => {
     seq.current++
     save('rafiq.member', m); save('rafiq.campaign', c)
+    const synced = c ? new Date().toISOString() : null // "آخر مزامنة" on the campaign screen
+    save('rafiq.syncedAt', synced); setSyncedAt(synced)
     setLocal(m, c)
   }, [setLocal])
 
@@ -82,6 +86,7 @@ export function SessionProvider({ children }) {
       if (e.key !== 'rafiq.member' && e.key !== 'rafiq.campaign') return
       seq.current++
       setLocal(load('rafiq.member'), load('rafiq.campaign'))
+      setSyncedAt(load('rafiq.syncedAt'))
     }
     // Returning to a tab: make sure the role still matches the shared session.
     const onVisible = () => {
@@ -129,8 +134,8 @@ export function SessionProvider({ children }) {
   }, [applyMember])
 
   const value = useMemo(() => ({
-    member, campaign, loading, join, signOut, refreshMembership, isLeader: member?.role === 'leader',
-  }), [member, campaign, loading, join, signOut, refreshMembership])
+    member, campaign, loading, syncedAt, join, signOut, refreshMembership, isLeader: member?.role === 'leader',
+  }), [member, campaign, loading, syncedAt, join, signOut, refreshMembership])
   return <SessionCtx.Provider value={value}>{children}</SessionCtx.Provider>
 }
 

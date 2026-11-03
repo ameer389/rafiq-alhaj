@@ -18,4 +18,13 @@ export async function sendArrivalCheck(member) {
 // Missing `_to` = everyone.
 export const recipientsOf = (m) => (Array.isArray(m?.translations?._to) ? m.translations._to : null)
 export const isForMember = (m, memberId) => { const to = recipientsOf(m); return !to || to.includes(memberId) }
-export const translationLangs = (m) => Object.keys(m?.translations ?? {}).filter((l) => l !== 'ar' && !l.startsWith('_'))
+// Real language entries only: skips 'ar' (the original) and meta keys such as `_to` (non-strings too).
+export const translationLangs = (m) => Object.entries(m?.translations ?? {})
+  .filter(([l, v]) => l !== 'ar' && !l.startsWith('_') && typeof v === 'string' && v.trim())
+  .map(([l]) => l)
+// Text of a message in `lang`, or null if there is no real translation for it.
+export const translationIn = (m, lang) => {
+  if (!lang || lang.startsWith('_')) return null
+  const v = m?.translations?.[lang]
+  return typeof v === 'string' && v.trim() ? v : null
+}

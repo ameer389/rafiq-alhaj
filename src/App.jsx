@@ -8,6 +8,7 @@ import PilgrimHome from './pages/pilgrim/Home'
 import Settings from './pages/pilgrim/Settings'
 import Message from './pages/pilgrim/Message'
 import MessageList from './pages/pilgrim/MessageList'
+import Campaign from './pages/pilgrim/Campaign'
 import { PilgrimMessagesProvider } from './lib/pilgrimMessages'
 import { IncomingBanner } from './components/MessageCards'
 import LeaderHome from './pages/leader/Home'
@@ -49,7 +50,7 @@ export default function App() {
       <Route path="/p/m/:id" element={<Message />} />
       <Route path="/p/messages" element={<MessageList />} />
       <Route path="/p/assistant" element={<Soon nav={PILGRIM_NAV} title="nav.assistant" />} />
-      <Route path="/p/campaign" element={<Soon nav={PILGRIM_NAV} title="nav.myCampaign" />} />
+      <Route path="/p/campaign" element={<Campaign />} />
       <Route path="/p/settings" element={<Settings />} />
       <Route path="/p/*" element={<Soon back="/p" />} />
       <Route path="*" element={<Navigate to="/p" replace />} />

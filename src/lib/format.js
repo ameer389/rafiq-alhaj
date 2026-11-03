@@ -15,3 +15,24 @@ export function fmtTime(iso, lang = 'ar', t) {
   const period = get('dayPeriod') === 'AM' ? t?.('common.am') : t?.('common.pm')
   return `${hm} ${period ?? ''}`.trim()
 }
+
+// Calendar day in Makkah time: "اليوم" / "أمس" / "3 نوفمبر".
+const LOCALE = { ar: 'ar-SA-u-nu-latn-ca-gregory', ur: 'ur-PK', en: 'en-US', id: 'id-ID' }
+const dayKey = (d) => new Intl.DateTimeFormat('en-CA', { timeZone: TZ }).format(d) // YYYY-MM-DD
+export function fmtDay(iso, lang = 'ar', t) {
+  if (!iso) return ''
+  const d = new Date(iso)
+  const today = new Date()
+  const yesterday = new Date(today.getTime() - 86400000)
+  if (dayKey(d) === dayKey(today)) return t?.('campaign.today') ?? ''
+  if (dayKey(d) === dayKey(yesterday)) return t?.('campaign.yesterday') ?? ''
+  return new Intl.DateTimeFormat(LOCALE[lang] ?? 'en-US', { day: 'numeric', month: 'long', timeZone: TZ }).format(d)
+}
+export const fmtDayTime = (iso, lang, t) => (iso ? `${fmtDay(iso, lang, t)}، ${fmtTime(iso, lang, t)}` : '')
+
+// "+966550102024" → "+966 55 010 2024"
+export function fmtPhone(p) {
+  if (!p) return ''
+  const m = p.replace(/\s+/g, '').match(/^\+966(\d{2})(\d{3})(\d{4})$/)
+  return m ? `+966 ${m[1]} ${m[2]} ${m[3]}` : p
+}

@@ -144,7 +144,7 @@ Commit after each one with a working app. Mark ✅ here when done.
 
 **P1 — if time allows (in order)**
 4. [x] ✅ Arrival check: leader taps "طلب تأكيد الوصول" → message with `kind='arrival_check'` → pilgrim taps "وصلت" → leader sees "39/48 وصلوا".
-5. [ ] My campaign (design 15): leader name/phone (tap to call `tel:`), hotel, camp, assembly point + time, last updated. Cache in localStorage so it opens offline.
+5. [x] ✅ My campaign (design 15): leader name/phone (tap to call `tel:`), hotel, camp, assembly point + time, last updated. Cache in localStorage so it opens offline.
 6. [ ] Connection status chip on every screen (`online`/`offline` events).
 7. [ ] Offline help request: pilgrim creates a request → saved in a localStorage queue with status "لم يُرسل بعد" → auto-sent on `online` event (idempotent via `client_id`) → status "تم الإرسال". Leader sees it live under الطلبات.
 8. [ ] "أنا ضائع" (designs 07/08): ask location permission → Leaflet map with user + assembly point, distance & walking minutes (haversine, ~80 m/min) → call leader, show card, share location with leader only after a separate explicit consent.

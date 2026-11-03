@@ -89,7 +89,8 @@
     "sendFailed": "Could not send. Please try again.",
     "sent": "Message sent",
     "leaderSessionEnded": "Your leader session has ended — please sign in again",
-    "signInAgain": "Sign in again"
+    "signInAgain": "Sign in again",
+    "fallbackNote": "Backup translation — please review it"
   },
   "priority": {
     "normal": "Normal",
@@ -144,5 +145,23 @@
     "sending": "Sending…",
     "detailTitle": "Arrival check",
     "toNotArrived": "To not arrived · {n}"
+  },
+  "campaign": {
+    "title": "My campaign",
+    "leader": "Campaign leader",
+    "phone": "Leader's phone",
+    "call": "Call the leader",
+    "hotel": "Hotel",
+    "camp": "Camp",
+    "assembly": "Active assembly point & time",
+    "updatedByLeader": "Last updated by leader",
+    "lastSync": "Last sync",
+    "refresh": "Refresh",
+    "refreshing": "Refreshing…",
+    "refreshFailed": "Could not refresh. Please try again.",
+    "offlineNote": "You're offline — this info is saved on your device",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "never": "Not yet"
   }
 }

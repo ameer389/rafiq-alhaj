@@ -16,6 +16,9 @@
   --color-mint: #ddf6f3;       /* online chip, verified boxes */
   --color-mint-ink: #0f766e;
   --color-success: #15803d;
+  --color-warn: #fff4dc;       /* amber notes (e.g. backup translation) */
+  --color-warn-line: #f0c36a;
+  --color-warn-ink: #8a5300;
   --color-page: #f3f7f8;       /* page background */
   --color-line: #dbe3e7;       /* card borders */
   --color-line-strong: #6f8593;/* outlined buttons */

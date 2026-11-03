@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import { supabase } from './supabase'
 import { load, save } from './storage'
 import { useSession } from './session'
-import { isArrival, isForMember } from './arrival'
+import { isArrival, isForMember, translationIn } from './arrival'
 import { subscribeLive } from './live'
 
 // Pilgrim side: campaign messages + which ones I confirmed + leader names.
@@ -82,7 +82,7 @@ export const usePilgrimMessages = () => useContext(Ctx)
 // Text of a message in the pilgrim's language (falls back to the Arabic original).
 export function messageText(m, lang) {
   if (lang === 'ar') return m.original_text
-  return m.translations?.[lang] || m.original_text
+  return translationIn(m, lang) ?? m.original_text
 }
 // Arrival checks are written natively in every language — no "translated from Arabic" footer.
-export const isTranslated = (m, lang) => lang !== 'ar' && !isArrival(m) && !!m.translations?.[lang]
+export const isTranslated = (m, lang) => lang !== 'ar' && !isArrival(m) && !!translationIn(m, lang)
