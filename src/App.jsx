@@ -1,0 +1,42 @@
+import { Navigate, Route, Routes } from 'react-router-dom'
+import { useI18n } from './i18n'
+import { useSession } from './lib/session'
+import { LEADER_NAV, PILGRIM_NAV } from './components/BottomNav'
+import Join from './pages/Join'
+import Soon from './pages/Soon'
+import PilgrimHome from './pages/pilgrim/Home'
+import Settings from './pages/pilgrim/Settings'
+import LeaderHome from './pages/leader/Home'
+
+function Splash() {
+  const { t } = useI18n()
+  return <div className="grid min-h-dvh place-items-center bg-navy-900 text-xl font-bold text-white">{t('app.name')}</div>
+}
+
+export default function App() {
+  const { member, loading, isLeader } = useSession()
+
+  // Show splash only on the very first load (no cached session yet).
+  if (loading && !member) return <Splash />
+  if (!member) return <Join />
+
+  return isLeader ? (
+    <Routes>
+      <Route path="/l" element={<LeaderHome />} />
+      <Route path="/l/requests" element={<Soon nav={LEADER_NAV} title="nav.requests" />} />
+      <Route path="/l/members" element={<Soon nav={LEADER_NAV} title="nav.members" />} />
+      <Route path="/l/messages" element={<Soon nav={LEADER_NAV} title="nav.messages" />} />
+      <Route path="/l/*" element={<Soon back="/l" />} />
+      <Route path="*" element={<Navigate to="/l" replace />} />
+    </Routes>
+  ) : (
+    <Routes>
+      <Route path="/p" element={<PilgrimHome />} />
+      <Route path="/p/assistant" element={<Soon nav={PILGRIM_NAV} title="nav.assistant" />} />
+      <Route path="/p/campaign" element={<Soon nav={PILGRIM_NAV} title="nav.myCampaign" />} />
+      <Route path="/p/settings" element={<Settings />} />
+      <Route path="/p/*" element={<Soon back="/p" />} />
+      <Route path="*" element={<Navigate to="/p" replace />} />
+    </Routes>
+  )
+}

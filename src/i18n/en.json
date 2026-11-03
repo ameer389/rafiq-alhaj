@@ -1,0 +1,43 @@
+{
+  "app": { "name": "Rafiq Alhaj", "tagline": "Your link to your campaign leader, in your language" },
+  "status": { "online": "Online", "offline": "Offline" },
+  "nav": { "home": "Home", "assistant": "Assistant", "myCampaign": "My group", "settings": "Settings", "requests": "Requests", "members": "Members", "messages": "Messages" },
+  "join": {
+    "chooseLang": "Choose your language",
+    "code": "Campaign code",
+    "codePh": "NOOR24",
+    "name": "Your name",
+    "namePh": "Type your name",
+    "submit": "Join campaign",
+    "joining": "Joining…",
+    "leaderHint": "Campaign leader? Enter the leader code.",
+    "errInvalid": "Invalid code. Please check it with your campaign leader.",
+    "errName": "Please type your name.",
+    "errGeneric": "Could not join. Check your connection and try again."
+  },
+  "common": { "soon": "Coming soon", "soonBody": "This feature is being built.", "back": "Back", "signOut": "Leave campaign", "signOutConfirm": "Do you want to leave the campaign?", "loading": "Loading…", "language": "Language", "am": "AM", "pm": "PM" },
+  "home": {
+    "hello": "Welcome, {name}",
+    "assemblyPoint": "Current assembly point",
+    "lost": "I'm lost",
+    "tileAssistant": "Ask the assistant",
+    "tileReturn": "Back to my group",
+    "tileServices": "Nearby services",
+    "tileHelp": "Request help",
+    "tileCampaign": "My campaign",
+    "tileCard": "My card & QR"
+  },
+  "leader": {
+    "badge": "Campaign leader",
+    "membersCount": "{n} members",
+    "lastUpdate": "Updated {time}",
+    "statMembers": "Members",
+    "statArrived": "Arrived",
+    "statRequests": "Open requests",
+    "statUrgent": "Urgent",
+    "statOffline": "Offline",
+    "statSharing": "Sharing location",
+    "quickAnnouncement": "Quick announcement",
+    "arrivalCheck": "Arrival check"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "app": { "name": "Rafiq Alhaj", "tagline": "Penghubung Anda dengan ketua rombongan, dalam bahasa Anda" },
+  "status": { "online": "Daring", "offline": "Luring" },
+  "nav": { "home": "Beranda", "assistant": "Asisten", "myCampaign": "Rombongan", "settings": "Pengaturan", "requests": "Permintaan", "members": "Anggota", "messages": "Pesan" },
+  "join": {
+    "chooseLang": "Pilih bahasa Anda",
+    "code": "Kode rombongan",
+    "codePh": "NOOR24",
+    "name": "Nama Anda",
+    "namePh": "Tulis nama Anda",
+    "submit": "Gabung rombongan",
+    "joining": "Bergabung…",
+    "leaderHint": "Ketua rombongan? Masukkan kode ketua.",
+    "errInvalid": "Kode salah. Tanyakan kepada ketua rombongan Anda.",
+    "errName": "Silakan tulis nama Anda.",
+    "errGeneric": "Gagal bergabung. Periksa koneksi lalu coba lagi."
+  },
+  "common": { "soon": "Segera hadir", "soonBody": "Fitur ini sedang dikembangkan.", "back": "Kembali", "signOut": "Keluar dari rombongan", "signOutConfirm": "Keluar dari rombongan?", "loading": "Memuat…", "language": "Bahasa", "am": "pagi", "pm": "sore" },
+  "home": {
+    "hello": "Selamat datang, {name}",
+    "assemblyPoint": "Titik kumpul saat ini",
+    "lost": "Saya tersesat",
+    "tileAssistant": "Tanya asisten",
+    "tileReturn": "Kembali ke rombongan",
+    "tileServices": "Layanan terdekat",
+    "tileHelp": "Minta bantuan",
+    "tileCampaign": "Info rombongan",
+    "tileCard": "Kartu & QR saya"
+  },
+  "leader": {
+    "badge": "Ketua rombongan",
+    "membersCount": "{n} anggota",
+    "lastUpdate": "Diperbarui {time}",
+    "statMembers": "Anggota",
+    "statArrived": "Tiba",
+    "statRequests": "Permintaan terbuka",
+    "statUrgent": "Darurat",
+    "statOffline": "Luring",
+    "statSharing": "Berbagi lokasi",
+    "quickAnnouncement": "Pengumuman cepat",
+    "arrivalCheck": "Cek kedatangan"
+  }
+}

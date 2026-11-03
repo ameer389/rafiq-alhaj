@@ -1,0 +1,43 @@
+{
+  "app": { "name": "رفيق الحاج", "tagline": "صلتك بقائد حملتك، بلغتك" },
+  "status": { "online": "متصل", "offline": "دون اتصال" },
+  "nav": { "home": "الرئيسية", "assistant": "المساعد", "myCampaign": "حملتي", "settings": "الإعدادات", "requests": "الطلبات", "members": "الأعضاء", "messages": "الرسائل" },
+  "join": {
+    "chooseLang": "اختر لغتك",
+    "code": "رمز الحملة",
+    "codePh": "NOOR24",
+    "name": "اسمك",
+    "namePh": "اكتب اسمك",
+    "submit": "انضمام إلى الحملة",
+    "joining": "جارٍ الانضمام…",
+    "leaderHint": "قائد الحملة؟ أدخل رمز القائد.",
+    "errInvalid": "الرمز غير صحيح. تأكد منه مع قائد حملتك.",
+    "errName": "اكتب اسمك من فضلك.",
+    "errGeneric": "تعذّر الانضمام. تحقق من الاتصال وحاول مرة أخرى."
+  },
+  "common": { "soon": "قريبًا", "soonBody": "هذه الميزة قيد التطوير.", "back": "رجوع", "signOut": "الخروج من الحملة", "signOutConfirm": "هل تريد الخروج من الحملة؟", "loading": "جارٍ التحميل…", "language": "اللغة", "am": "ص", "pm": "م" },
+  "home": {
+    "hello": "مرحبًا، {name}",
+    "assemblyPoint": "نقطة التجمع الحالية",
+    "lost": "أنا ضائع",
+    "tileAssistant": "تحدث مع المساعد",
+    "tileReturn": "العودة إلى حملتي",
+    "tileServices": "أقرب الخدمات",
+    "tileHelp": "طلب مساعدة",
+    "tileCampaign": "بيانات حملتي",
+    "tileCard": "بطاقتي وQR"
+  },
+  "leader": {
+    "badge": "قائد الحملة",
+    "membersCount": "{n} عضوًا",
+    "lastUpdate": "آخر تحديث {time}",
+    "statMembers": "الأعضاء",
+    "statArrived": "وصلوا",
+    "statRequests": "طلبات مفتوحة",
+    "statUrgent": "عاجل",
+    "statOffline": "غير متصلين",
+    "statSharing": "يشاركون الموقع",
+    "quickAnnouncement": "إعلان سريع",
+    "arrivalCheck": "طلب تأكيد الوصول"
+  }
+}

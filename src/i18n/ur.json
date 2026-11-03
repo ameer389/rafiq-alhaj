@@ -1,0 +1,43 @@
+{
+  "app": { "name": "رفیقِ حاجی", "tagline": "آپ کی زبان میں، آپ کے گروپ لیڈر سے رابطہ" },
+  "status": { "online": "آن لائن", "offline": "آف لائن" },
+  "nav": { "home": "ہوم", "assistant": "معاون", "myCampaign": "میرا گروپ", "settings": "ترتیبات", "requests": "درخواستیں", "members": "اراکین", "messages": "پیغامات" },
+  "join": {
+    "chooseLang": "اپنی زبان منتخب کریں",
+    "code": "گروپ کوڈ",
+    "codePh": "NOOR24",
+    "name": "آپ کا نام",
+    "namePh": "اپنا نام لکھیں",
+    "submit": "گروپ میں شامل ہوں",
+    "joining": "شامل ہو رہے ہیں…",
+    "leaderHint": "گروپ لیڈر؟ لیڈر کوڈ درج کریں۔",
+    "errInvalid": "کوڈ درست نہیں۔ اپنے گروپ لیڈر سے تصدیق کریں۔",
+    "errName": "براہ کرم اپنا نام لکھیں۔",
+    "errGeneric": "شامل نہیں ہو سکے۔ کنکشن چیک کریں اور دوبارہ کوشش کریں۔"
+  },
+  "common": { "soon": "جلد آ رہا ہے", "soonBody": "یہ سہولت ابھی تیار ہو رہی ہے۔", "back": "واپس", "signOut": "گروپ سے نکلیں", "signOutConfirm": "کیا آپ گروپ سے نکلنا چاہتے ہیں؟", "loading": "لوڈ ہو رہا ہے…", "language": "زبان", "am": "صبح", "pm": "شام" },
+  "home": {
+    "hello": "السلام علیکم، {name}",
+    "assemblyPoint": "موجودہ ملاقات کی جگہ",
+    "lost": "میں کھو گیا ہوں",
+    "tileAssistant": "معاون سے پوچھیں",
+    "tileReturn": "اپنے گروپ تک واپسی",
+    "tileServices": "قریبی سہولیات",
+    "tileHelp": "مدد کی درخواست",
+    "tileCampaign": "میرا گروپ",
+    "tileCard": "میرا کارڈ اور QR"
+  },
+  "leader": {
+    "badge": "گروپ لیڈر",
+    "membersCount": "{n} اراکین",
+    "lastUpdate": "آخری اپ ڈیٹ {time}",
+    "statMembers": "اراکین",
+    "statArrived": "پہنچ گئے",
+    "statRequests": "کھلی درخواستیں",
+    "statUrgent": "فوری",
+    "statOffline": "آف لائن",
+    "statSharing": "لوکیشن شیئر",
+    "quickAnnouncement": "فوری اعلان",
+    "arrivalCheck": "پہنچنے کی تصدیق"
+  }
+}

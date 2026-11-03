@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+/* ===== Design tokens (sampled from design/ mockups) — change colors here only ===== */
+@theme {
+  --color-navy-900: #071724;   /* dark headers */
+  --color-navy-800: #102d3f;   /* primary buttons */
+  --color-navy-700: #1c3d52;
+  --color-danger: #f05251;     /* "أنا ضائع", urgent */
+  --color-danger-soft: #fdeeee;
+  --color-danger-ink: #c62828;
+  --color-gold: #d9b15a;       /* icon circles, leader badge */
+  --color-gold-line: #dfbd6e;  /* cream card borders */
+  --color-gold-ink: #8a5a00;   /* brown labels ("آخر إعلان من القائد") */
+  --color-cream: #f7efd8;      /* leader-message card, assembly card */
+  --color-cream-2: #fff7d8;
+  --color-mint: #ddf6f3;       /* online chip, verified boxes */
+  --color-mint-ink: #0f766e;
+  --color-success: #15803d;
+  --color-page: #f3f7f8;       /* page background */
+  --color-line: #dbe3e7;       /* card borders */
+  --color-line-strong: #6f8593;/* outlined buttons */
+  --color-ink: #0b1b26;        /* main text */
+  --color-muted: #5b6b76;      /* secondary text */
+  --color-chip: #e7edf0;       /* grey chip / segmented bg */
+
+  --font-sans: "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --font-urdu: "Noto Nastaliq Urdu", "IBM Plex Sans Arabic", serif;
+
+  --radius-card: 1.25rem;
+}
+
+html, body { background: var(--color-page); color: var(--color-ink); }
+body { font-family: var(--font-sans); -webkit-tap-highlight-color: transparent; }
+
+/* Per mockups 03/10: Urdu UI chrome uses IBM Plex; Nastaliq only for Urdu message content.
+   Add .font-urdu to any element that shows an Urdu message body. */
+.font-urdu { font-family: var(--font-urdu); line-height: 2.1; }
+
+button { cursor: pointer; }
+button:disabled { cursor: default; }
