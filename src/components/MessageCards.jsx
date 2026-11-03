@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { isArrival } from '../lib/arrival'
 import Icon from './Icon'
 import { isRtl, useI18n } from '../i18n'
-import { messageText, usePilgrimMessages } from '../lib/pilgrimMessages'
+import { isTranslated, messageText, usePilgrimMessages } from '../lib/pilgrimMessages'
 import { fmtTime } from '../lib/format'
 import { useSpeech } from '../lib/useSpeech'
 import { Button, Chip, IconCircle } from './ui'
@@ -14,7 +14,7 @@ function MsgText({ m, className = '' }) {
   const shownLang = text === m.original_text ? 'ar' : lang
   return (
     <p dir={isRtl(shownLang) ? 'rtl' : 'ltr'} lang={shownLang}
-      className={`leading-relaxed ${shownLang === 'ur' ? 'font-urdu' : ''} ${className}`}>{text}</p>
+      className={`leading-relaxed ${shownLang === 'ur' ? 'font-urdu' : 'font-sans'} ${className}`}>{text}</p>
   )
 }
 
@@ -46,15 +46,28 @@ function ArrivalCard({ m }) {
   )
 }
 
-// Screen 09 — "رسالة من قائدك": avatar, title, time, text, «استمع». Unread → green «جديد» chip.
-export function LatestMessageCard({ m }) {
+// Screens 09 / 34 / 35 / 36 — "رسالة من قائدك": avatar, title, time, text in my language,
+// «استمع», «النص الأصلي» (shows the Arabic in a neutral box, 36), and «فهمت» while unconfirmed
+// (our core loop: the leader's live "understood" counter).
+export function MessageCard({ m, showAck = true, highlight = true }) {
   const { t, lang } = useI18n()
-  const { acked } = usePilgrimMessages()
+  const { acked, ack } = usePilgrimMessages()
   const { available, speaking, speak, stop } = useSpeech(lang)
+  const [showOriginal, setShowOriginal] = useState(false)
+  const [busy, setBusy] = useState(false)
+  const [failed, setFailed] = useState(false)
   const unread = !acked.has(m.id)
-  if (unread && isArrival(m)) return <ArrivalCard m={m} />
+  if (unread && isArrival(m) && showAck) return <ArrivalCard m={m} />
+  const translated = isTranslated(m, lang)
+
+  async function onAck() {
+    setBusy(true); setFailed(false)
+    try { await ack(m.id) } catch (e) { console.error(e); setFailed(true) }
+    setBusy(false)
+  }
+
   return (
-    <article className={`rounded-[var(--radius-card)] border bg-surface p-5 ${unread ? 'border-primary-line ring-2 ring-primary/15' : 'border-line'}`}>
+    <article className={`rounded-[var(--radius-card)] border bg-surface p-5 ${unread && highlight ? 'border-primary-line ring-2 ring-primary/15' : 'border-line'}`}>
       <Link to={`/p/m/${m.id}`} className="block">
         <div className="flex items-center gap-3">
           <IconCircle icon="user" size="size-12" iconSize="size-6" />
@@ -68,15 +81,40 @@ export function LatestMessageCard({ m }) {
         </div>
         <MsgText m={m} className="mt-4 text-lg" />
       </Link>
-      {available && (
-        <Button variant="soft" size="pill" icon={speaking ? 'x' : 'volume'} iconClass="size-5 rtl:-scale-x-100" className="mt-4"
-          onClick={() => (speaking ? stop() : speak(messageText(m, lang)))}>
-          {speaking ? t('msg.stop') : t('msg.listen')}
-        </Button>
+
+      {translated && showOriginal && (
+        <div className="mt-3 rounded-[var(--radius-btn)] bg-neutral-soft px-4 py-3">
+          <div className="text-muted">{t('msg.original')}</div>
+          <p dir="rtl" lang="ar" className="mt-1 font-sans text-lg leading-relaxed">{m.original_text}</p>
+        </div>
       )}
+
+      {(available || translated) && (
+        <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
+          {available && (
+            <Button variant="soft" size="pill" icon={speaking ? 'x' : 'volume'} iconClass="size-5 rtl:-scale-x-100"
+              onClick={() => (speaking ? stop() : speak(messageText(m, lang)))}>
+              {speaking ? t('msg.stop') : t('msg.listen')}
+            </Button>
+          )}
+          {translated && (
+            <button type="button" onClick={() => setShowOriginal((v) => !v)} aria-expanded={showOriginal}
+              className="py-2 text-lg font-bold text-primary">
+              {showOriginal ? t('msg.hideOriginal') : t('msg.originalText')}
+            </button>
+          )}
+        </div>
+      )}
+
+      {showAck && unread && (
+        <Button icon="check" className="mt-4 w-full" onClick={onAck} disabled={busy}>{t('msg.gotIt')}</Button>
+      )}
+      {failed && <p className="mt-2 font-semibold text-danger-ink">{t('msg.ackFailed')}</p>}
     </article>
   )
 }
+/** old name */
+export const LatestMessageCard = MessageCard
 
 // Floating banner when a message arrives live (shown on every pilgrim screen except home & the message itself).
 export function IncomingBanner() {
@@ -95,21 +133,5 @@ export function IncomingBanner() {
         </div>
       </Link>
     </div>
-  )
-}
-
-export function MessageListItem({ m }) {
-  const { t, lang } = useI18n()
-  const { acked } = usePilgrimMessages()
-  const unread = !acked.has(m.id)
-  return (
-    <Link to={`/p/m/${m.id}`} className="block rounded-[var(--radius-card)] border border-line bg-white p-4">
-      <div className="mb-1 flex items-center gap-2 text-sm text-muted">
-        {unread ? <span className="size-2.5 rounded-full bg-primary" /> : <Icon name="checkCircle" className="size-4 text-primary" />}
-        <span>{fmtTime(m.created_at, lang, t)}</span>
-        {m.priority !== 'normal' && <span className="font-bold text-sand-ink">· {t(`priority.${m.priority}`)}</span>}
-      </div>
-      <MsgText m={m} className={unread ? 'font-bold' : ''} />
-    </Link>
   )
 }

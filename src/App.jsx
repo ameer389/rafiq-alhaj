@@ -6,7 +6,6 @@ import Join from './pages/Join'
 import Soon from './pages/Soon'
 import PilgrimHome from './pages/pilgrim/Home'
 import Message from './pages/pilgrim/Message'
-import MessageList from './pages/pilgrim/MessageList'
 import Campaign from './pages/pilgrim/Campaign'
 import HelpStatus, { HelpIndex } from './pages/pilgrim/Help'
 import Lost from './pages/pilgrim/Lost'
@@ -52,7 +51,7 @@ export default function App() {
     <Routes>
       <Route path="/p" element={<PilgrimHome />} />
       <Route path="/p/m/:id" element={<Message />} />
-      <Route path="/p/messages" element={<MessageList />} />
+      <Route path="/p/messages" element={<Navigate to="/p/campaign" replace />} />
       <Route path="/p/campaign" element={<Campaign />} />
       <Route path="/p/lost" element={<Lost />} />
       <Route path="/p/help" element={<HelpIndex />} />

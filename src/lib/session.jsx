@@ -44,6 +44,12 @@ export function SessionProvider({ children }) {
   // Called with fresh server data (initial load, refresh, join) or null (signed out).
   const applyMember = useCallback((m, c) => {
     seq.current++
+    const pendingLang = load('rafiq.pendingLang')
+    if (m && pendingLang && m.lang !== pendingLang) {
+      m = { ...m, lang: pendingLang }
+      supabase.from('members').update({ lang: pendingLang }).eq('id', m.id)
+        .then(({ error }) => { if (!error) save('rafiq.pendingLang', null) })
+    } else if (pendingLang) save('rafiq.pendingLang', null)
     // Screen 12: the leader moved the assembly time/point → keep an alert (old → new) until dismissed.
     const prev = campaignRef.current
     if (m?.role === 'pilgrim' && prev && c && prev.id === c.id
@@ -171,19 +177,32 @@ export function SessionProvider({ children }) {
     () => {}, { poll: false })
   }, [campaign?.id, member, applyMember])
 
+  // Screen 33/34/35 — change language: UI flips right away (dir too), server learns it so the leader's
+  // next messages arrive in this language. Offline → remembered and saved on the next sync.
+  const changeLanguage = useCallback(async (lang) => {
+    const m = memberRef.current
+    setLang(lang)
+    if (!m || m.lang === lang) return
+    const updated = { ...m, lang }
+    memberRef.current = updated; setMember(updated); save('rafiq.member', updated)
+    save('rafiq.pendingLang', lang)
+    const { error } = await supabase.from('members').update({ lang }).eq('id', m.id)
+    if (!error) save('rafiq.pendingLang', null)
+  }, [setLang])
+
   const dismissAssemblyAlert = useCallback(() => { save('rafiq.assemblyAlert', null); setAssemblyAlert(null) }, [])
 
   const signOut = useCallback(async () => {
     await supabase.auth.signOut().catch(() => {})
-    save('rafiq.messages', null); save('rafiq.acked', null); save('rafiq.helpQueue', null)
+    save('rafiq.messages', null); save('rafiq.acked', null); save('rafiq.helpQueue', null); save('rafiq.pendingLang', null)
     applyMember(null, null)
   }, [applyMember])
 
   const value = useMemo(() => ({
     member, campaign, loading, syncedAt, preview, join, finishJoin, cancelOnboarding, signOut, refreshMembership,
-    assemblyAlert, dismissAssemblyAlert, isLeader: member?.role === 'leader',
+    assemblyAlert, dismissAssemblyAlert, changeLanguage, isLeader: member?.role === 'leader',
   }), [member, campaign, loading, syncedAt, preview, join, finishJoin, cancelOnboarding, signOut, refreshMembership,
-    assemblyAlert, dismissAssemblyAlert])
+    assemblyAlert, dismissAssemblyAlert, changeLanguage])
   return <SessionCtx.Provider value={value}>{children}</SessionCtx.Provider>
 }
 

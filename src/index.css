@@ -57,7 +57,11 @@ html[data-text="xlarge"] { font-size: 130%; }
 html { background: #eeeae2; }   /* outside the phone column on desktop */
 body { color: var(--color-ink); font-family: var(--font-sans); -webkit-tap-highlight-color: transparent; }
 
-/* Urdu UI chrome uses IBM Plex; Nastaliq for Urdu message bodies (add .font-urdu). */
+/* Screen 35: the whole Urdu UI is Nastaliq (with Urdu digits via fmtNum/fmtTime).
+   Nastaliq is tall — give every line more room than the Arabic/English `leading-*` values. */
+html[lang="ur"] body { font-family: var(--font-urdu); }
+html[lang="ur"] body * { line-height: 1.95 !important; }
+/* Urdu message bodies inside a non-Urdu UI (e.g. leader preview) */
 .font-urdu { font-family: var(--font-urdu); line-height: 2.1; }
 
 button { cursor: pointer; }

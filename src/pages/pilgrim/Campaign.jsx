@@ -1,95 +1,74 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import Icon from '../../components/Icon'
-import { Card, Screen, TopBar } from '../../components/Layout'
-import { useI18n } from '../../i18n'
-import { useSession } from '../../lib/session'
+import { Screen, TopBar } from '../../components/Layout'
+import { Button, InfoCard, InfoRow } from '../../components/ui'
+import { MessageCard } from '../../components/MessageCards'
 import TextSizeControl from '../../components/TextSizeControl'
-import { Button } from '../../components/ui'
-import { useOnline } from '../../lib/useOnline'
-import { fmtDayTime, fmtPhone } from '../../lib/format'
+import { useCallLeader } from '../../components/CallLeader'
+import { LANGS, useI18n } from '../../i18n'
+import { useSession } from '../../lib/session'
+import { usePilgrimMessages } from '../../lib/pilgrimMessages'
+import { fmtDayTime, fmtTime } from '../../lib/format'
 
-function Row({ icon, label, children, action }) {
-  return (
-    <li className="flex items-center gap-3.5 py-3.5">
-      <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-neutral-soft text-muted">
-        <Icon name={icon} className="size-6" />
-      </span>
-      <div className="min-w-0 flex-1">
-        <div className="text-muted">{label}</div>
-        <div className="text-lg font-bold leading-snug">{children || '—'}</div>
-      </div>
-      {action}
-    </li>
-  )
-}
+const ORDER = ['ar', 'en', 'ur', 'id']
 
-// Design 15 — my campaign info. Works offline from the localStorage cache (session).
+// Screen 33 — "حملتي" (+ settings on the same page): campaign info + call leader, leader messages
+// (with original text — 36), language (34/35: switching flips the direction, you stay on this page),
+// text size (37). Opens offline from the device cache.
 export default function Campaign() {
   const { t, lang } = useI18n()
-  const { campaign: c, syncedAt, refreshMembership, signOut } = useSession()
-  const online = useOnline()
-  const [busy, setBusy] = useState(false)
-  const [failed, setFailed] = useState(false)
-
-  async function refresh() {
-    setBusy(true); setFailed(false)
-    try { await refreshMembership() } catch (e) { console.warn(e); setFailed(true) }
-    setBusy(false)
-  }
-
-  const tel = c?.leader_phone ? `tel:${c.leader_phone.replace(/\s+/g, '')}` : null
-  const assembly = [c?.assembly_point, c?.assembly_time && fmtDayTime(c.assembly_time, lang, t)].filter(Boolean).join(' · ')
+  const { campaign: c, signOut, changeLanguage } = useSession()
+  const { messages } = usePilgrimMessages()
+  const callLeader = useCallLeader()
+  const { hash } = useLocation()
+  useEffect(() => { if (hash) document.getElementById(hash.slice(1))?.scrollIntoView({ block: 'start' }) }, [hash])
 
   return (
     <Screen>
-      <TopBar title={t('campaign.title')} back="/p" />
-      <div className="flex flex-col gap-4 px-4 py-5">
-        {!online && (
-          <p className="flex items-center gap-2 rounded-2xl bg-neutral-soft px-4 py-3 font-semibold">
-            <Icon name="wifiOff" className="size-5 shrink-0" />{t('campaign.offlineNote')}
-          </p>
-        )}
+      <TopBar back="/p" title={t('campaign.title')} />
+      <div className="flex flex-col gap-4 px-5 pt-4">
+        <InfoCard>
+          <InfoRow label={t('myc.group')}>{c?.name}</InfoRow>
+          <InfoRow label={t('myc.leader')} action={c?.leader_phone && (
+            <Button size="md" icon="phone" iconClass="size-5" onClick={callLeader.call} className="min-h-[3.25rem] px-6 text-lg">{t('myc.call')}</Button>
+          )}>{c?.leader_name}</InfoRow>
+          <InfoRow label={t('myc.assembly')}>
+            {c?.assembly_point}{c?.assembly_time ? ` · ${fmtTime(c.assembly_time, lang, t, { long: true })}` : ''}
+          </InfoRow>
+          {c?.camp && <InfoRow label={t('myc.camp')}>{c.camp}</InfoRow>}
+          {c?.hotel && <InfoRow label={t('myc.hotel')}>{c.hotel}</InfoRow>}
+        </InfoCard>
+        {c?.updated_at && <p className="-mt-1 px-1 text-sm text-muted">{t('myc.lastUpdated', { time: fmtDayTime(c.updated_at, lang, t) })}</p>}
 
-        <Card className="px-4 pt-4">
-          <div className="flex items-center gap-3.5 pb-1">
-            <span className="grid size-14 place-items-center rounded-xl bg-sand-soft text-sand-ink"><Icon name="users" className="size-7" /></span>
-            <h2 className="text-2xl font-bold">{c?.name}</h2>
-          </div>
-          <ul className="divide-y divide-line">
-            <Row icon="user" label={t('campaign.leader')} action={tel && (
-              <a href={tel} aria-label={t('campaign.call')}
-                className="grid size-14 shrink-0 place-items-center rounded-2xl border-2 border-line-strong text-ink active:bg-neutral-soft">
-                <Icon name="phone" className="size-6" />
-              </a>
-            )}>{c?.leader_name}</Row>
-            <Row icon="phone" label={t('campaign.phone')}>
-              {tel ? <a href={tel} dir="ltr" className="inline-block">{fmtPhone(c.leader_phone)}</a> : null}
-            </Row>
-            <Row icon="building" label={t('campaign.hotel')}>{c?.hotel}</Row>
-            <Row icon="tent" label={t('campaign.camp')}>{c?.camp}</Row>
-            <Row icon="flag" label={t('campaign.assembly')}>{assembly}</Row>
-          </ul>
-        </Card>
+        <h2 id="messages" className="mt-3 text-[1.4rem] font-bold">{t('myc.leaderMessages')}</h2>
+        {messages.length === 0 && <p className="text-muted">{t('msg.none')}</p>}
+        {/* 33: listen + original only — «فهمت» lives on the home card / message page */}
+        {messages.map((m) => <MessageCard key={m.id} m={m} highlight={false} showAck={false} />)}
 
-        <Card className="px-4">
-          <ul className="divide-y divide-line">
-            <Row icon="clock" label={t('campaign.updatedByLeader')}>{fmtDayTime(c?.updated_at, lang, t)}</Row>
-            <Row icon="refresh" label={t('campaign.lastSync')}>{syncedAt ? fmtDayTime(syncedAt, lang, t) : t('campaign.never')}</Row>
-          </ul>
-        </Card>
+        <h2 className="mt-3 text-[1.4rem] font-bold">{t('myc.language')}</h2>
+        <div className="grid grid-cols-2 gap-3" role="radiogroup">
+          {ORDER.map((code) => {
+            const active = code === lang
+            return (
+              <button key={code} type="button" role="radio" aria-checked={active} onClick={() => changeLanguage(code)}
+                dir={code === 'ar' || code === 'ur' ? 'rtl' : 'ltr'} lang={code}
+                className={`flex min-h-16 items-center justify-center gap-2 rounded-[var(--radius-card)] border px-3 text-xl font-bold
+                  ${code === 'ur' ? 'font-urdu' : 'font-sans'}
+                  ${active ? 'border-primary bg-primary-soft text-primary-ink' : 'border-line bg-surface'}`}>
+                {active && <Icon name="check" className="size-5" />}
+                {LANGS.find((l) => l.code === code).label}
+              </button>
+            )
+          })}
+        </div>
 
-        <button onClick={refresh} disabled={busy || !online}
-          className="flex items-center justify-center gap-2.5 rounded-2xl border-2 border-line-strong bg-white py-4 text-lg font-bold disabled:opacity-50">
-          <Icon name="refresh" className={`size-6 ${busy ? 'animate-spin' : ''}`} />
-          {busy ? t('campaign.refreshing') : t('campaign.refresh')}
-        </button>
-        {failed && <p className="rounded-xl bg-danger-soft px-4 py-3 font-semibold text-danger-ink">{t('campaign.refreshFailed')}</p>}
+        <div className="mt-3"><TextSizeControl /></div>
 
-        {/* settings (merged here — screen 33; restyled fully in phase 4) */}
-        <TextSizeControl />
-        <Button variant="secondary" icon="logOut" iconClass="size-5 ltr:-scale-x-100"
+        <Button variant="secondary" icon="logOut" iconClass="size-5 ltr:-scale-x-100" className="mt-4"
           onClick={() => confirm(t('common.signOutConfirm')) && signOut()}>{t('common.signOut')}</Button>
       </div>
+      {callLeader.sheet}
     </Screen>
   )
 }

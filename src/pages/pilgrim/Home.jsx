@@ -90,7 +90,7 @@ export default function PilgrimHome() {
         <Link to="/p/lost"
           className="flex flex-col items-center rounded-[var(--radius-hero)] bg-danger px-6 py-6 text-center text-white transition active:brightness-95">
           <span className="grid h-12 w-16 place-items-center rounded-full bg-white/20"><Icon name="alert" className="size-8" /></span>
-          <span className="mt-2 text-[2.4rem] font-bold leading-tight">{t('home.lost')}</span>
+          <span className="mt-2 text-[2.4rem] font-bold leading-tight [html[lang=ur]_&]:text-[1.9rem]">{t('home.lost')}</span>
           <span className="mt-1 text-lg text-white/90">{t('home.lostSub')}</span>
         </Link>
 
@@ -101,7 +101,7 @@ export default function PilgrimHome() {
 
         {latest && !latestUnread && <LatestMessageCard m={latest} />}
         {messages.length > 1 && (
-          <Link to="/p/messages" className="text-center text-lg font-bold text-primary underline underline-offset-4">
+          <Link to="/p/campaign#messages" className="text-center text-lg font-bold text-primary underline underline-offset-4">
             {t('msg.all')}
           </Link>
         )}

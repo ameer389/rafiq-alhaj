@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "Rafiq Alhaj",
+    "name": "Rafiq Al-Hajj",
     "tagline": "Your link to your campaign leader, in your language"
   },
   "status": {
@@ -145,7 +145,8 @@
     "read": "Read",
     "all": "All messages",
     "none": "No messages from your leader yet",
-    "notFound": "Message not found"
+    "notFound": "Message not found",
+    "originalText": "Original text"
   },
   "acks": {
     "understood": "understood",
@@ -172,7 +173,7 @@
     "toNotArrived": "To not arrived · {n}"
   },
   "campaign": {
-    "title": "My campaign",
+    "title": "My group",
     "leader": "Campaign leader",
     "phone": "Leader's phone",
     "call": "Call the leader",
@@ -307,5 +308,16 @@
     "sendLoc": "Send my location",
     "stop": "Stop",
     "noLocation": "Couldn't get your location. You can send without it."
+  },
+  "myc": {
+    "group": "Group",
+    "leader": "Leader",
+    "assembly": "Meeting point",
+    "camp": "Camp",
+    "hotel": "Hotel",
+    "call": "Call",
+    "leaderMessages": "Leader messages",
+    "language": "Language",
+    "lastUpdated": "Last updated by the leader: {time}"
   }
 }

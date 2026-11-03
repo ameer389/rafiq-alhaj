@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "Rafiq Alhaj",
+    "name": "Rafiq Al-Hajj",
     "tagline": "Penghubung Anda dengan ketua rombongan, dalam bahasa Anda"
   },
   "status": {
@@ -132,7 +132,7 @@
     "translatedFrom": "Diterjemahkan dari bahasa Arab",
     "showOriginal": "Lihat teks asli",
     "hideOriginal": "Sembunyikan teks asli",
-    "original": "Teks asli (bahasa Arab)",
+    "original": "Asli (bahasa Arab)",
     "listen": "Dengarkan",
     "stop": "Berhenti",
     "noVoice": "Suara tidak tersedia untuk bahasa ini di perangkat ini",
@@ -145,7 +145,8 @@
     "read": "Baca",
     "all": "Semua pesan",
     "none": "Belum ada pesan dari ketua",
-    "notFound": "Pesan tidak ditemukan"
+    "notFound": "Pesan tidak ditemukan",
+    "originalText": "Teks asli"
   },
   "acks": {
     "understood": "mengerti",
@@ -172,7 +173,7 @@
     "toNotArrived": "Untuk yang belum tiba · {n}"
   },
   "campaign": {
-    "title": "Info rombongan",
+    "title": "Rombongan saya",
     "leader": "Ketua rombongan",
     "phone": "Nomor ketua",
     "call": "Telepon ketua",
@@ -307,5 +308,16 @@
     "sendLoc": "Kirim lokasi saya",
     "stop": "Hentikan",
     "noLocation": "Lokasi tidak didapat. Anda bisa mengirim tanpanya."
+  },
+  "myc": {
+    "group": "Rombongan",
+    "leader": "Ketua",
+    "assembly": "Titik kumpul",
+    "camp": "Tenda",
+    "hotel": "Hotel",
+    "call": "Telepon",
+    "leaderMessages": "Pesan ketua",
+    "language": "Bahasa",
+    "lastUpdated": "Terakhir diperbarui ketua: {time}"
   }
 }
