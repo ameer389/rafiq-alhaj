@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Screen, TopBar } from '../components/Layout'
+import { AppHeader, Screen, TopBar } from '../components/Layout'
 import { Button, IconCircle, InfoCard, InfoRow, Notice, Chip } from '../components/ui'
 import { LANGS, useI18n } from '../i18n'
 import { useSession } from '../lib/session'
@@ -141,6 +141,25 @@ export default function Join() {
             ? <Button onClick={error.title === 'onboard.failTitle' ? retry : checkCode}>{t('onboard.tryAgain')}</Button>
             : <Button type="submit" disabled={busy}>{busy ? t('onboard.checking') : t('onboard.continue')}</Button>}
         </form>
+      </Screen>
+    )
+  }
+
+  // ---------- 39 leader verification (ADAPT: the role comes from the code via preview_campaign) ----------
+  if (step === 'confirm' && group.role === 'leader') {
+    return (
+      <Screen>
+        <AppHeader title={group.name} subtitle={t('lh.subtitle', { name: group.leader_name ?? '' })} />
+        <div className="flex flex-col gap-4 px-5 pt-3">
+          <h1 className="text-[1.75rem] font-bold">{t('verify.title', { name: name.trim() })}</h1>
+          <InfoCard>
+            <InfoRow label={t('verify.permission')}>{t('verify.permLeader')}</InfoRow>
+            <InfoRow label={t('onboard.campaign')}>{group.name}</InfoRow>
+          </InfoCard>
+          <p className="text-lg leading-relaxed text-muted">{t('verify.note')}</p>
+          <Button onClick={confirmJoin}>{t('verify.enter')}</Button>
+          <Button variant="secondary" onClick={backToCode}>{t('common.back')}</Button>
+        </div>
       </Screen>
     )
   }

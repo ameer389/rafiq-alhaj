@@ -9,14 +9,16 @@ import Message from './pages/pilgrim/Message'
 import Campaign from './pages/pilgrim/Campaign'
 import HelpStatus, { HelpIndex } from './pages/pilgrim/Help'
 import Lost from './pages/pilgrim/Lost'
-import Requests from './pages/leader/Requests'
 import { HelpRequestsProvider } from './lib/helpRequests'
 import { PilgrimMessagesProvider } from './lib/pilgrimMessages'
 import { IncomingBanner } from './components/MessageCards'
 import LeaderHome from './pages/leader/Home'
-import NewMessage from './pages/leader/NewMessage'
 import Messages from './pages/leader/Messages'
 import MessageDetail from './pages/leader/MessageDetail'
+import RequestDetail from './pages/leader/RequestDetail'
+import Members from './pages/leader/Members'
+import MemberDetail from './pages/leader/MemberDetail'
+import Assembly from './pages/leader/Assembly'
 import { LeaderDataProvider } from './lib/leaderData'
 
 function Splash() {
@@ -35,12 +37,15 @@ export default function App() {
     <LeaderDataProvider>
     <Routes>
       <Route path="/l" element={<LeaderHome />} />
-      <Route path="/l/m/:id" element={<MessageDetail />} />
-      <Route path="/l/requests" element={<Requests />} />
-      <Route path="/l/members" element={<Soon nav={LEADER_NAV} title="nav.members" />} />
+      <Route path="/l/r/:id" element={<RequestDetail />} />
+      <Route path="/l/members" element={<Members />} />
+      <Route path="/l/members/:id" element={<MemberDetail />} />
       <Route path="/l/messages" element={<Messages />} />
-      <Route path="/l/new" element={<NewMessage />} />
-      <Route path="/l/*" element={<Soon back="/l" />} />
+      <Route path="/l/m/:id" element={<MessageDetail />} />
+      <Route path="/l/assembly" element={<Assembly />} />
+      {/* old links */}
+      <Route path="/l/requests" element={<Navigate to="/l" replace />} />
+      <Route path="/l/new" element={<Navigate to="/l/messages" replace />} />
       <Route path="*" element={<Navigate to="/l" replace />} />
     </Routes>
     </LeaderDataProvider>

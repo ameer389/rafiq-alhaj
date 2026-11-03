@@ -62,10 +62,10 @@ export function LeaderDataProvider({ children }) {
     setMessages((prev) => (prev?.some((x) => x.id === m.id) ? prev : [m, ...(prev ?? [])])), [])
 
   // Leader-only: move a help request to in_progress / resolved (optimistic, reverts on error).
-  const updateRequest = useCallback(async (id, status) => {
+  const updateRequest = useCallback(async (id, status, extra = {}) => {
     const before = helpRef.current?.find((r) => r.id === id)?.status
-    setHelpRequests((prev) => prev?.map((r) => (r.id === id ? { ...r, status } : r)))
-    const { error, status: http } = await supabase.from('help_requests').update({ status }).eq('id', id)
+    setHelpRequests((prev) => prev?.map((r) => (r.id === id ? { ...r, status, ...extra } : r)))
+    const { error, status: http } = await supabase.from('help_requests').update({ status, ...extra }).eq('id', id)
     if (error) {
       setHelpRequests((prev) => prev?.map((r) => (r.id === id ? { ...r, status: before } : r)))
       return { error, status: http }
@@ -98,4 +98,20 @@ export function ackStats(m, acks, pilgrims) {
 export function arrivalStats(messages, acks, pilgrims) {
   const latest = messages?.find(isArrival) ?? null
   return { latest, ...ackStats(latest, acks, pilgrims) }
+}
+
+// Screens 44/45/46 — status per pilgrim:
+//   needHelp (has a help request that isn't resolved) > arrived / notConfirmed (latest arrival check) > null (no check yet)
+export function memberStatuses(pilgrims, messages, acks, helpRequests) {
+  const arrival = messages?.find(isArrival) ?? null
+  const arrivedBy = arrival ? (acks[arrival.id] ?? {}) : null
+  const activeReq = {}
+  for (const r of helpRequests ?? []) if (r.status !== 'resolved' && !activeReq[r.member_id]) activeReq[r.member_id] = r
+  const map = {}
+  for (const p of pilgrims) {
+    const request = activeReq[p.id] ?? null
+    const arrivedAt = arrivedBy?.[p.id] ?? null
+    map[p.id] = { request, arrivedAt, state: request ? 'needHelp' : arrivedBy ? (arrivedAt ? 'arrived' : 'notConfirmed') : null }
+  }
+  return { map, arrival }
 }

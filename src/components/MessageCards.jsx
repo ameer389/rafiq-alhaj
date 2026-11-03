@@ -80,6 +80,7 @@ export function MessageCard({ m, showAck = true, highlight = true }) {
           </div>
         </div>
         <MsgText m={m} className="mt-4 text-lg" />
+        {lang !== 'ar' && !translated && !isArrival(m) && <p className="mt-2 text-sm text-muted">{t('msg.untranslatedNote')}</p>}
       </Link>
 
       {translated && showOriginal && (

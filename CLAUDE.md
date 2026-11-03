@@ -139,7 +139,7 @@ Commit after each one with a working app. Mark ✅ here when done.
 6. [x] ✅ Connection status chip on every screen (`online`/`offline` events).
 7. [x] ✅ Offline help request: pilgrim creates a request → saved in a localStorage queue with status "لم يُرسل بعد" → auto-sent on `online` event (idempotent via `client_id`) → status "تم الإرسال". Leader sees it live under الطلبات.
 8. [ ] "أنا ضائع" (designs 07/08): ask location permission → Leaflet map with user + assembly point, distance & walking minutes (haversine, ~80 m/min) → call leader, show card, share location with leader only after a separate explicit consent.
-9. [ ] Leader members list (design 17): search, filters (all / urgent / needs help / not arrived), language, online, last seen.
+9. [x] ✅ Leader members list (design 17): search, filters (all / urgent / needs help / not arrived), language, online, last seen.
 
 **P2 — vision (only if everything above is solid)**
 10. [ ] PWA offline package with progress UI (designs 01/02).

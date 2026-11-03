@@ -9,7 +9,7 @@ import { fmtNum } from '../lib/format'
 export default function BottomNav({ items }) {
   const { t, lang } = useI18n()
   const leader = useLeaderData() // null on pilgrim screens
-  const badgeFor = (it) => (it.to === '/l/requests' ? leader?.openRequests?.length ?? 0 : it.badge)
+  const badgeFor = (it) => (it.to === '/l' ? leader?.openRequests?.length ?? 0 : it.badge)
   return (
     <nav className="fixed inset-x-0 bottom-0 z-20 mx-auto w-full max-w-[430px] border-t border-line-soft bg-surface pb-[env(safe-area-inset-bottom)]">
       <ul className="grid" style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}>
@@ -47,8 +47,7 @@ export const PILGRIM_NAV = [
   { to: '/p/settings', icon: 'settings', label: 'nav.settings' },
 ]
 export const LEADER_NAV = [
-  { to: '/l', icon: 'home', label: 'nav.home' },
-  { to: '/l/requests', icon: 'inbox', label: 'nav.requests' },
+  { to: '/l', icon: 'home', label: 'nav.requests' },
   { to: '/l/members', icon: 'users', label: 'nav.members' },
-  { to: '/l/messages', icon: 'megaphone', label: 'nav.messages' },
+  { to: '/l/messages', icon: 'chat', label: 'nav.messages' },
 ]

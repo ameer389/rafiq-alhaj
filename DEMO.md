@@ -21,9 +21,10 @@ npm run dev        # http://localhost:5173  (also on your LAN IP for phones)
 Needs `.env.local` with `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
 
 ## 60-second demo script
-1. Two phones side by side. Phone A: language → code `NOOR24-L` + name → «نعم، هذه مجموعتي» (leader). Phone B: pick **اردو** → code `NOOR24` + name → confirm group → «شروع کریں». (Shows: language 01 → code 02 → confirm group 04 → saving on the phone 06 → ready 07.)
-2. Leader taps **إعلان سريع**, types Arabic (e.g. "انتظروا عند البوابة ٣، المشرف في طريقه إليكم"), taps **ترجمة ومعاينة** (~3 s), shows the Urdu/English/Indonesian preview, taps **إرسال**.
-3. Phone B instantly shows the message in Urdu on its home → tap **پڑھیں** → **سنیں** (listen) / **اصل متن دیکھیں** (original) → **سمجھ گیا**.
-4. Leader home: the "آخر رسالة" counter jumps (e.g. 5/8 → 6/8 فهموا). Tap it → list of who hasn't confirmed yet.
-5. _(bonus)_ Leader taps **طلب تأكيد الوصول** → phone B shows a green **میں پہنچ گیا** button on its home → tap → leader sees "1 / 8 وصلوا" live. Then **إعلان سريع** → **لم يصلوا · 7** sends a reminder only to those who haven't arrived.
-6. _(offline)_ Phone B: **airplane mode** → red **أنا ضائع** → **أرسلوا لي أحدًا** → sheet says «لا يوجد إنترنت: سيُحفظ طلبك…» → **أرسل الطلب دون مكاني** → sand «حفظنا طلبك على جوالك» (step 1/5). Airplane mode off → it sends itself → «وصل طلبك» (2/5); leader sees the red banner. Leader moves it on → pilgrim sees «استلم المشرف طلبك» (3/5) → «المساعدة في الطريق» (4/5). Pilgrim taps **وصلت بأمان** → request closed, location sharing stops (5/5).
+1. Two phones side by side. Phone A: language → code `NOOR24-L` + name → «دخول» (leader verification, screen 39). Phone B: pick **اردو** → code `NOOR24` + name → confirm group → «شروع کریں». (Shows: language 01 → code 02 → confirm group 04 → saving on the phone 06 → ready 07.)
+2. Leader → tab **الرسائل**: tap a ready template (e.g. «انتظر في مكانك» — ready translations) or type Arabic, e.g. "الرجاء إحضار المظلات معكم غداً" → the Urdu/English/Indonesian preview appears by itself (~3 s, editable) → **إرسال** → confirm sheet «إرسال إلى كل الحملة (٢٧)؟» → **إرسال**.
+3. Phone B instantly shows the message in Urdu (Nastaliq) at the top of its home → **سنیں** (listen) / **اصل متن** (original) → **سمجھ گیا**.
+4. Leader, **الرسائل** → «المرسلة»: the counter on that message jumps (e.g. ٥/٢٧ → ٦/٢٧ فهموا). Tap it → who hasn't confirmed yet.
+5. _(arrival)_ Leader → **الأعضاء** → **طلب تأكيد الوصول** → phone B shows a green **میں پہنچ گیا** on its home → tap → the «وصلوا» filter/count goes up live. Filter **لم يؤكدوا** shows who's missing; **الرسائل** → «لم يؤكدوا» sends a reminder only to them.
+6. _(offline help)_ Phone B: **airplane mode** → red **أنا ضائع** → **أرسلوا لي أحدًا** → sheet says «لا يوجد إنترنت…» → **أرسل الطلب دون مكاني** → sand «حفظنا طلبك على جوالك» (step 1/5). Airplane mode off → it sends itself → «وصل طلبك» (2/5); leader home shows the red «طلب جديد» card → **افتح الطلب** → **استلمت** (pilgrim: 3/5) → **المساعدة في الطريق** (4/5) → **إغلاق الطلب** with a reason, or the pilgrim taps **وصلت بأمان** (5/5).
+7. _(time change)_ Leader home → «نقطة التجمع» **تعديل** → pick ٥:٠٠ مساءً → **حفظ** → phone B shows «تغيّر موعد التجمع — أصبح … (كان …)» live. (Set it back to 16:30 with «وقت آخر».)
