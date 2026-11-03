@@ -21,7 +21,7 @@ npm run dev        # http://localhost:5173  (also on your LAN IP for phones)
 Needs `.env.local` with `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
 
 ## 60-second demo script
-1. Two phones side by side. Phone A: join with `NOOR24-L` (leader). Phone B: pick **اردو**, join with `NOOR24`.
+1. Two phones side by side. Phone A: language → code `NOOR24-L` + name → «نعم، هذه مجموعتي» (leader). Phone B: pick **اردو** → code `NOOR24` + name → confirm group → «شروع کریں». (Shows: language 01 → code 02 → confirm group 04 → saving on the phone 06 → ready 07.)
 2. Leader taps **إعلان سريع**, types Arabic (e.g. "انتظروا عند البوابة ٣، المشرف في طريقه إليكم"), taps **ترجمة ومعاينة** (~3 s), shows the Urdu/English/Indonesian preview, taps **إرسال**.
 3. Phone B instantly shows the message in Urdu on its home → tap **پڑھیں** → **سنیں** (listen) / **اصل متن دیکھیں** (original) → **سمجھ گیا**.
 4. Leader home: the "آخر رسالة" counter jumps (e.g. 5/8 → 6/8 فهموا). Tap it → list of who hasn't confirmed yet.

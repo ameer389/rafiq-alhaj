@@ -124,7 +124,7 @@ export default function LeaderHome() {
         )}
 
         <AssemblyCard campaign={campaign} aside={arrival.latest && (
-          <Link to={`/l/m/${arrival.latest.id}`} className="flex shrink-0 items-center gap-1.5 rounded-full bg-white px-3.5 py-2 font-bold">
+          <Link to={`/l/m/${arrival.latest.id}`} className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-surface px-3.5 py-2 font-bold text-ink">
             <span>{t('arrival.label')}</span>
             <span dir="ltr" className="tabular-nums">{arrival.count} / {arrival.total}</span>
             <Icon name="userCheck" className="size-4 text-primary" />

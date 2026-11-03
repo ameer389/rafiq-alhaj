@@ -1,11 +1,10 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { useI18n } from './i18n'
 import { useSession } from './lib/session'
-import { LEADER_NAV, PILGRIM_NAV } from './components/BottomNav'
+import { LEADER_NAV } from './components/BottomNav'
 import Join from './pages/Join'
 import Soon from './pages/Soon'
 import PilgrimHome from './pages/pilgrim/Home'
-import Settings from './pages/pilgrim/Settings'
 import Message from './pages/pilgrim/Message'
 import MessageList from './pages/pilgrim/MessageList'
 import Campaign from './pages/pilgrim/Campaign'
@@ -53,10 +52,9 @@ export default function App() {
       <Route path="/p" element={<PilgrimHome />} />
       <Route path="/p/m/:id" element={<Message />} />
       <Route path="/p/messages" element={<MessageList />} />
-      <Route path="/p/assistant" element={<Soon nav={PILGRIM_NAV} title="nav.assistant" />} />
       <Route path="/p/campaign" element={<Campaign />} />
       <Route path="/p/help" element={<Help />} />
-      <Route path="/p/settings" element={<Settings />} />
+      <Route path="/p/settings" element={<Navigate to="/p/campaign" replace />} />
       <Route path="/p/*" element={<Soon back="/p" />} />
       <Route path="*" element={<Navigate to="/p" replace />} />
     </Routes>

@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { supabase } from './supabase'
 import { load, save } from './storage'
 import { useI18n } from '../i18n'
+import { subscribeLive } from './live'
 
 // Session = anonymous Supabase user + their `members` row + their campaign.
 // Cached in localStorage so the app opens instantly (and offline) after the first join.
@@ -29,7 +30,9 @@ export function SessionProvider({ children }) {
   const [syncedAt, setSyncedAt] = useState(() => load('rafiq.syncedAt'))
   const memberRef = useRef(member)
   const seq = useRef(0)        // bumps on every change; stale async results are dropped
-  const joining = useRef(false)
+  const hold = useRef(false)   // true during join + onboarding (06/07): background refreshes must not switch screens
+  const campaignRef = useRef(campaign)
+  const [assemblyAlert, setAssemblyAlert] = useState(() => load('rafiq.assemblyAlert'))
 
   // Update this tab's state only (no localStorage write — used for cross-tab sync).
   const setLocal = useCallback((m, c) => {
@@ -41,6 +44,15 @@ export function SessionProvider({ children }) {
   // Called with fresh server data (initial load, refresh, join) or null (signed out).
   const applyMember = useCallback((m, c) => {
     seq.current++
+    // Screen 12: the leader moved the assembly time/point → keep an alert (old → new) until dismissed.
+    const prev = campaignRef.current
+    if (m?.role === 'pilgrim' && prev && c && prev.id === c.id
+      && (prev.assembly_time !== c.assembly_time || prev.assembly_point !== c.assembly_point)) {
+      const alert = { oldTime: prev.assembly_time, newTime: c.assembly_time, oldPoint: prev.assembly_point, newPoint: c.assembly_point }
+      save('rafiq.assemblyAlert', alert); setAssemblyAlert(alert)
+    }
+    if (!m) { save('rafiq.assemblyAlert', null); setAssemblyAlert(null) }
+    campaignRef.current = c
     save('rafiq.member', m); save('rafiq.campaign', c)
     const synced = c ? new Date().toISOString() : null // "آخر مزامنة" on the campaign screen
     save('rafiq.syncedAt', synced); setSyncedAt(synced)
@@ -54,7 +66,7 @@ export function SessionProvider({ children }) {
     const { data: { session } } = await supabase.auth.getSession()
     if (!session) { if (apply && seq.current === mySeq) applyMember(null, null); return null }
     const { m, c } = await fetchMembership(session.user.id)
-    if (apply && seq.current === mySeq && !joining.current) applyMember(m, c)
+    if (apply && seq.current === mySeq && !hold.current) applyMember(m, c)
     return m
   }, [applyMember])
 
@@ -69,7 +81,7 @@ export function SessionProvider({ children }) {
   useEffect(() => {
     // supabase-js broadcasts SIGNED_IN / SIGNED_OUT / TOKEN_REFRESHED to other tabs.
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (joining.current) return
+      if (hold.current) return
       const cur = memberRef.current
       if (event === 'SIGNED_OUT' || !session) {
         if (cur) applyMember(null, null)
@@ -83,10 +95,12 @@ export function SessionProvider({ children }) {
 
     // Another tab saved a different member/campaign → mirror it immediately.
     const onStorage = (e) => {
-      if (e.key !== 'rafiq.member' && e.key !== 'rafiq.campaign') return
+      if (!['rafiq.member', 'rafiq.campaign', 'rafiq.assemblyAlert'].includes(e.key)) return
       seq.current++
-      setLocal(load('rafiq.member'), load('rafiq.campaign'))
+      campaignRef.current = load('rafiq.campaign')
+      setLocal(load('rafiq.member'), campaignRef.current)
       setSyncedAt(load('rafiq.syncedAt'))
+      setAssemblyAlert(load('rafiq.assemblyAlert'))
     }
     // Returning to a tab: make sure the role still matches the shared session.
     const onVisible = () => {
@@ -101,31 +115,63 @@ export function SessionProvider({ children }) {
     }
   }, [applyMember, refreshMembership, setLocal])
 
-  // Returns null on success, or an error key for i18n.
-  const join = useCallback(async ({ code, name, lang }) => {
-    joining.current = true
+  const ensureSession = async () => {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (session) return session
+    const { data, error } = await supabase.auth.signInAnonymously()
+    if (error) throw error
+    return data.session
+  }
+
+  // Screen 04: what campaign does this code belong to? → { name, leader_name, assembly_point, assembly_time, role } | null
+  // Throws on network/server errors (caller shows "try again").
+  const preview = useCallback(async (code) => {
+    hold.current = true
+    await ensureSession()
+    const { data, error } = await supabase.rpc('preview_campaign', { p_code: code.trim().toUpperCase() })
+    if (error) throw error
+    return (Array.isArray(data) ? data[0] : data) ?? null
+  }, [])
+
+  // Join. Returns { error: i18nKey } or { member, campaign }.
+  // defer: don't switch to the home screen yet (onboarding shows 06 → 07 first); call finishJoin() after.
+  const join = useCallback(async ({ code, name, lang }, { defer = false } = {}) => {
+    hold.current = true
     try {
-      let { data: { session } } = await supabase.auth.getSession()
-      if (!session) {
-        const { data, error } = await supabase.auth.signInAnonymously()
-        if (error) { console.error(error); return 'join.errGeneric' }
-        session = data.session
-      }
+      await ensureSession()
       const { data: m, error } = await supabase.rpc('join_campaign', {
         p_code: code.trim().toUpperCase(), p_name: name.trim(), p_lang: lang,
       })
       if (error) {
         console.error(error)
-        return /invalid code/i.test(error.message) ? 'join.errInvalid' : 'join.errGeneric'
+        return { error: /invalid code/i.test(error.message) ? 'join.errInvalid' : 'join.errGeneric' }
       }
       const member = Array.isArray(m) ? m[0] : m
       const { data: c } = await supabase.from('campaigns').select('*').eq('id', member.campaign_id).maybeSingle()
-      applyMember(member, c)
-      return null
+      if (!defer) { hold.current = false; applyMember(member, c) }
+      return { member, campaign: c }
+    } catch (e) {
+      console.error(e)
+      return { error: 'join.errGeneric' }
     } finally {
-      joining.current = false
+      if (!defer) hold.current = false
     }
   }, [applyMember])
+
+  const finishJoin = useCallback((m, c) => { hold.current = false; campaignRef.current = c; applyMember(m, c) }, [applyMember])
+  const cancelOnboarding = useCallback(() => { hold.current = false }, [])
+
+  // Screen 12: live campaign updates (leader edits assembly time/point — screen 53).
+  useEffect(() => {
+    const cid = campaign?.id
+    if (!cid || !member) return
+    return subscribeLive(`campaign-${cid}`, (ch) => ch.on('postgres_changes',
+      { event: 'UPDATE', schema: 'public', table: 'campaigns', filter: `id=eq.${cid}` },
+      ({ new: c }) => { if (!hold.current) applyMember(memberRef.current, { ...campaignRef.current, ...c }) }),
+    () => {}, { poll: false })
+  }, [campaign?.id, member, applyMember])
+
+  const dismissAssemblyAlert = useCallback(() => { save('rafiq.assemblyAlert', null); setAssemblyAlert(null) }, [])
 
   const signOut = useCallback(async () => {
     await supabase.auth.signOut().catch(() => {})
@@ -134,8 +180,10 @@ export function SessionProvider({ children }) {
   }, [applyMember])
 
   const value = useMemo(() => ({
-    member, campaign, loading, syncedAt, join, signOut, refreshMembership, isLeader: member?.role === 'leader',
-  }), [member, campaign, loading, syncedAt, join, signOut, refreshMembership])
+    member, campaign, loading, syncedAt, preview, join, finishJoin, cancelOnboarding, signOut, refreshMembership,
+    assemblyAlert, dismissAssemblyAlert, isLeader: member?.role === 'leader',
+  }), [member, campaign, loading, syncedAt, preview, join, finishJoin, cancelOnboarding, signOut, refreshMembership,
+    assemblyAlert, dismissAssemblyAlert])
   return <SessionCtx.Provider value={value}>{children}</SessionCtx.Provider>
 }
 

@@ -10,7 +10,8 @@ const POLL_MS = 5000
 //    and every 5 s while visible (safety net on flaky networks).
 // configure(channel) adds the .on(...) handlers; resync() re-fetches from the DB.
 // Returns a cleanup function.
-export function subscribeLive(name, configure, resync) {
+// opts.poll = false → no 5 s safety-net polling (e.g. the campaign row, refreshed on focus anyway).
+export function subscribeLive(name, configure, resync, { poll = true } = {}) {
   let channel = null
   let cancelled = false
 
@@ -32,7 +33,7 @@ export function subscribeLive(name, configure, resync) {
 
   const visible = () => document.visibilityState === 'visible'
   const onVisible = () => visible() && resync()
-  const timer = setInterval(() => visible() && navigator.onLine && resync(), POLL_MS)
+  const timer = poll ? setInterval(() => visible() && navigator.onLine && resync(), POLL_MS) : null
   window.addEventListener('online', resync)
   document.addEventListener('visibilitychange', onVisible)
 

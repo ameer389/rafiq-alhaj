@@ -33,32 +33,35 @@ export function AppHeader({ title, subtitle, badge, children }) {
 export const DarkHeader = AppHeader
 
 // "‹ الرئيسية" / "< Home" — outlined white pill, green text (screens 02, 22, 33, 36).
-export function BackPill({ to, label }) {
+export function BackPill({ to, onClick, label }) {
   const { t } = useI18n()
-  return (
-    <Link to={to} className="inline-flex min-h-12 items-center gap-2 rounded-[var(--radius-btn)] border border-line bg-surface px-4 text-lg font-bold text-primary">
+  const cls = 'inline-flex min-h-12 items-center gap-2 rounded-[var(--radius-btn)] border border-line bg-surface px-4 text-lg font-bold text-primary'
+  const body = (
+    <>
       {/* chevron on the start side, pointing "back": › in RTL, ‹ in LTR */}
       <Icon name="chevronLeft" className="size-5 rtl:-scale-x-100" />
       {label ?? t('common.back')}
-    </Link>
+    </>
   )
+  return to ? <Link to={to} className={cls}>{body}</Link> : <button type="button" onClick={onClick} className={cls}>{body}</button>
 }
 
 // Inner-page top: back pill + status chip, then a big page title (screens 04, 22, 33).
 // back / close = route to go back to; `backLabel` overrides the pill text (defaults: home → "الرئيسية").
-export function TopBar({ title, back, close, backLabel }) {
+export function TopBar({ title, subtitle, back, close, onBack, backLabel }) {
   const { t } = useI18n()
   const to = back ?? close
   const label = backLabel ?? (to === '/p' || to === '/l' ? t('nav.home') : t('common.back'))
   return (
     <header className="px-5 pb-1 pt-5">
-      {to ? (
+      {to || onBack ? (
         <>
           <div className="flex items-center justify-between gap-3">
-            <BackPill to={to} label={label} />
+            <BackPill to={to} onClick={onBack} label={label} />
             <StatusChip />
           </div>
           {title && <h1 className="mt-5 text-[1.75rem] font-bold leading-tight">{title}</h1>}
+          {subtitle && <p className="mt-2 text-lg leading-relaxed text-muted">{subtitle}</p>}
         </>
       ) : (
         <div className="flex items-start justify-between gap-3">

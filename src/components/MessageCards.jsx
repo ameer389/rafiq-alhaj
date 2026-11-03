@@ -5,6 +5,8 @@ import Icon from './Icon'
 import { isRtl, useI18n } from '../i18n'
 import { messageText, usePilgrimMessages } from '../lib/pilgrimMessages'
 import { fmtTime } from '../lib/format'
+import { useSpeech } from '../lib/useSpeech'
+import { Button, Chip, IconCircle } from './ui'
 
 function MsgText({ m, className = '' }) {
   const { lang } = useI18n()
@@ -28,7 +30,7 @@ function ArrivalCard({ m }) {
     setBusy(false)
   }
   return (
-    <div className="rounded-[var(--radius-card)] border-2 border-primary/40 bg-primary-soft p-4">
+    <div className="rounded-[var(--radius-card)] border border-primary-line bg-primary-soft p-5">
       <div className="mb-2 flex items-center gap-2">
         <Icon name="userCheck" className="size-5 text-primary" />
         <span className="font-bold text-primary">{t('arrival.title')}</span>
@@ -36,7 +38,7 @@ function ArrivalCard({ m }) {
       </div>
       <MsgText m={m} className="text-lg font-semibold" />
       <button onClick={onArrived} disabled={busy}
-        className="mt-3 flex w-full items-center justify-center gap-2.5 rounded-xl bg-primary py-4 text-2xl font-bold text-white disabled:opacity-60">
+        className="mt-4 flex min-h-[3.75rem] w-full items-center justify-center gap-2.5 rounded-[var(--radius-btn)] bg-primary text-xl font-bold text-white disabled:opacity-60">
         <Icon name="check" className="size-7" strokeWidth={2.5} />{t('arrival.arrived')}
       </button>
       {failed && <p className="mt-2 text-sm font-semibold text-danger-ink">{t('msg.ackFailed')}</p>}
@@ -44,28 +46,35 @@ function ArrivalCard({ m }) {
   )
 }
 
-// Design 04 — "آخر إعلان من القائد" card on pilgrim home.
+// Screen 09 — "رسالة من قائدك": avatar, title, time, text, «استمع». Unread → green «جديد» chip.
 export function LatestMessageCard({ m }) {
   const { t, lang } = useI18n()
   const { acked } = usePilgrimMessages()
+  const { available, speaking, speak, stop } = useSpeech(lang)
   const unread = !acked.has(m.id)
   if (unread && isArrival(m)) return <ArrivalCard m={m} />
   return (
-    <Link to={`/p/m/${m.id}`}
-      className={`block rounded-[var(--radius-card)] border p-4 ${unread ? 'border-sand-line bg-sand-soft ring-2 ring-sand/40' : 'border-line bg-white'}`}>
-      <div className="mb-2 flex items-center gap-2">
-        <Icon name="megaphone" className="size-5 text-sand-ink" />
-        <span className="font-bold text-sand-ink">{isArrival(m) ? t('arrival.title') : unread ? t('msg.newBanner') : t('msg.latest')}</span>
-        {unread && <span className="rounded-full bg-danger px-2 py-0.5 text-xs font-bold text-white">{t('msg.isNew')}</span>}
-        <span className="ms-auto text-sm text-muted">{fmtTime(m.created_at, lang, t)}</span>
-      </div>
-      <MsgText m={m} className="text-lg" />
-      {unread && (
-        <span className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-primary py-3 font-bold text-white">
-          {t('msg.read')}<Icon name="chevronLeft" className="size-5 ltr:-scale-x-100" />
-        </span>
+    <article className={`rounded-[var(--radius-card)] border bg-surface p-5 ${unread ? 'border-primary-line ring-2 ring-primary/15' : 'border-line'}`}>
+      <Link to={`/p/m/${m.id}`} className="block">
+        <div className="flex items-center gap-3">
+          <IconCircle icon="user" size="size-12" iconSize="size-6" />
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xl font-bold">{isArrival(m) ? t('arrival.title') : t('home.msgFromLeader')}</span>
+              {unread && <Chip tone="primary" className="!py-1 text-sm">{t('msg.isNew')}</Chip>}
+            </div>
+            <div className="text-muted">{fmtTime(m.created_at, lang, t)}</div>
+          </div>
+        </div>
+        <MsgText m={m} className="mt-4 text-lg" />
+      </Link>
+      {available && (
+        <Button variant="soft" size="pill" icon={speaking ? 'x' : 'volume'} iconClass="size-5 rtl:-scale-x-100" className="mt-4"
+          onClick={() => (speaking ? stop() : speak(messageText(m, lang)))}>
+          {speaking ? t('msg.stop') : t('msg.listen')}
+        </Button>
       )}
-    </Link>
+    </article>
   )
 }
 
@@ -96,7 +105,7 @@ export function MessageListItem({ m }) {
   return (
     <Link to={`/p/m/${m.id}`} className="block rounded-[var(--radius-card)] border border-line bg-white p-4">
       <div className="mb-1 flex items-center gap-2 text-sm text-muted">
-        {unread ? <span className="size-2.5 rounded-full bg-danger" /> : <Icon name="checkCircle" className="size-4 text-primary" />}
+        {unread ? <span className="size-2.5 rounded-full bg-primary" /> : <Icon name="checkCircle" className="size-4 text-primary" />}
         <span>{fmtTime(m.created_at, lang, t)}</span>
         {m.priority !== 'normal' && <span className="font-bold text-sand-ink">· {t(`priority.${m.priority}`)}</span>}
       </div>

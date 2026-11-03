@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import BottomNav, { PILGRIM_NAV } from '../../components/BottomNav'
+import { useSearchParams } from 'react-router-dom'
 import Icon from '../../components/Icon'
 import { Card, Screen, TopBar } from '../../components/Layout'
 import { useI18n } from '../../i18n'
@@ -30,7 +30,8 @@ export default function Help() {
   const { t, lang } = useI18n()
   const online = useOnline()
   const { requests, submit } = useHelpRequests()
-  const [type, setType] = useState(null)
+  const [params] = useSearchParams()
+  const [type, setType] = useState(() => (['lost', 'medical', 'other'].includes(params.get('type')) ? params.get('type') : null))
   const [note, setNote] = useState('')
   const [share, setShare] = useState(false)
   const [busy, setBusy] = useState(false)
@@ -48,7 +49,7 @@ export default function Help() {
   }
 
   return (
-    <Screen nav={<BottomNav items={PILGRIM_NAV} />}>
+    <Screen>
       <TopBar title={t('help.title')} back="/p" />
       <div className="flex flex-col gap-4 px-4 py-5">
         {!online && (

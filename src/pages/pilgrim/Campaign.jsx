@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import BottomNav, { PILGRIM_NAV } from '../../components/BottomNav'
 import Icon from '../../components/Icon'
 import { Card, Screen, TopBar } from '../../components/Layout'
 import { useI18n } from '../../i18n'
 import { useSession } from '../../lib/session'
+import TextSizeControl from '../../components/TextSizeControl'
+import { Button } from '../../components/ui'
 import { useOnline } from '../../lib/useOnline'
 import { fmtDayTime, fmtPhone } from '../../lib/format'
 
@@ -25,7 +26,7 @@ function Row({ icon, label, children, action }) {
 // Design 15 — my campaign info. Works offline from the localStorage cache (session).
 export default function Campaign() {
   const { t, lang } = useI18n()
-  const { campaign: c, syncedAt, refreshMembership } = useSession()
+  const { campaign: c, syncedAt, refreshMembership, signOut } = useSession()
   const online = useOnline()
   const [busy, setBusy] = useState(false)
   const [failed, setFailed] = useState(false)
@@ -40,8 +41,8 @@ export default function Campaign() {
   const assembly = [c?.assembly_point, c?.assembly_time && fmtDayTime(c.assembly_time, lang, t)].filter(Boolean).join(' · ')
 
   return (
-    <Screen nav={<BottomNav items={PILGRIM_NAV} />}>
-      <TopBar title={t('campaign.title')} />
+    <Screen>
+      <TopBar title={t('campaign.title')} back="/p" />
       <div className="flex flex-col gap-4 px-4 py-5">
         {!online && (
           <p className="flex items-center gap-2 rounded-2xl bg-neutral-soft px-4 py-3 font-semibold">
@@ -83,6 +84,11 @@ export default function Campaign() {
           {busy ? t('campaign.refreshing') : t('campaign.refresh')}
         </button>
         {failed && <p className="rounded-xl bg-danger-soft px-4 py-3 font-semibold text-danger-ink">{t('campaign.refreshFailed')}</p>}
+
+        {/* settings (merged here — screen 33; restyled fully in phase 4) */}
+        <TextSizeControl />
+        <Button variant="secondary" icon="logOut" iconClass="size-5 ltr:-scale-x-100"
+          onClick={() => confirm(t('common.signOutConfirm')) && signOut()}>{t('common.signOut')}</Button>
       </div>
     </Screen>
   )
