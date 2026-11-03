@@ -87,7 +87,9 @@
     "send": "Send",
     "sending": "Sending…",
     "sendFailed": "Could not send. Please try again.",
-    "sent": "Message sent"
+    "sent": "Message sent",
+    "leaderSessionEnded": "Your leader session has ended — please sign in again",
+    "signInAgain": "Sign in again"
   },
   "priority": {
     "normal": "Normal",
@@ -97,5 +99,37 @@
   "messages": {
     "empty": "No messages yet",
     "newMessage": "New message"
+  },
+  "msg": {
+    "title": "Message from your leader",
+    "leaderRole": "Campaign leader",
+    "translatedFrom": "Translated from Arabic",
+    "showOriginal": "Show original",
+    "hideOriginal": "Hide original",
+    "original": "Original (Arabic)",
+    "listen": "Listen",
+    "stop": "Stop",
+    "noVoice": "Listening is not available in this language on this device",
+    "gotIt": "Got it",
+    "confirmed": "Confirmed — thank you",
+    "ackFailed": "Could not confirm. Please try again.",
+    "latest": "Latest from your leader",
+    "newBanner": "New message from your leader",
+    "isNew": "New",
+    "read": "Read",
+    "all": "All messages",
+    "none": "No messages from your leader yet",
+    "notFound": "Message not found"
+  },
+  "acks": {
+    "understood": "understood",
+    "latestMessage": "Latest message",
+    "notConfirmed": "Not confirmed yet",
+    "confirmed": "Confirmed",
+    "allConfirmed": "Everyone understood",
+    "details": "Details",
+    "title": "Message details",
+    "translations": "Sent translations",
+    "live": "Live"
   }
 }

@@ -4,7 +4,7 @@ import Icon from '../../components/Icon'
 import Segmented from '../../components/Segmented'
 import { Screen, TopBar } from '../../components/Layout'
 import { isRtl, langLabel, useI18n } from '../../i18n'
-import { useSession } from '../../lib/session'
+import { isAuthError, useSession } from '../../lib/session'
 import { useMembers } from '../../lib/useMembers'
 import { supabase } from '../../lib/supabase'
 import { translateText } from '../../lib/translate'
@@ -15,7 +15,7 @@ const ALL_TARGETS = ['ur', 'en', 'id']
 export default function NewMessage() {
   const { t } = useI18n()
   const navigate = useNavigate()
-  const { member, campaign } = useSession()
+  const { member, campaign, refreshMembership, signOut } = useSession()
   const { pilgrims } = useMembers(campaign?.id)
 
   const [text, setText] = useState('')
@@ -23,7 +23,7 @@ export default function NewMessage() {
   const [translations, setTranslations] = useState(null) // { ur, en, id } once previewed
   const [translatedFrom, setTranslatedFrom] = useState('')
   const [status, setStatus] = useState('idle') // idle | translating | failed | sending
-  const [sendError, setSendError] = useState(false)
+  const [sendError, setSendError] = useState(null) // i18n key
 
   // Languages actually used in this campaign (+ member counts), Arabic excluded.
   const langCounts = useMemo(() => {
@@ -57,14 +57,25 @@ export default function NewMessage() {
 
   async function send() {
     if (!trimmed) return
-    setStatus('sending'); setSendError(false)
+    setStatus('sending'); setSendError(null)
     const final = { ar: trimmed }
     for (const [l, v] of Object.entries(translations ?? {})) if (v.trim()) final[l] = v.trim()
-    const { error } = await supabase.from('messages').insert({
+    const { error, status: httpStatus } = await supabase.from('messages').insert({
       campaign_id: member.campaign_id, sender_id: member.id,
       original_text: trimmed, translations: final, priority, kind: 'announcement',
     })
-    if (error) { console.error(error); setStatus('idle'); setSendError(true); return }
+    if (error) {
+      console.error(error)
+      setStatus('idle')
+      if (isAuthError(error, httpStatus)) {
+        // Rejected by RLS: is this browser session still the leader? (another tab may have re-joined)
+        const fresh = await refreshMembership({ apply: false }).catch(() => null)
+        setSendError(fresh?.role === 'leader' ? 'newMsg.sendFailed' : 'newMsg.leaderSessionEnded')
+      } else {
+        setSendError('newMsg.sendFailed')
+      }
+      return
+    }
     navigate('/l/messages', { state: { sent: true } })
   }
 
@@ -152,7 +163,16 @@ export default function NewMessage() {
           </div>
         </div>
 
-        {sendError && <p className="rounded-xl bg-danger-soft px-4 py-3 font-semibold text-danger-ink">{t('newMsg.sendFailed')}</p>}
+        {sendError && (
+          <div className="rounded-xl bg-danger-soft px-4 py-3 font-semibold text-danger-ink">
+            <p>{t(sendError)}</p>
+            {sendError === 'newMsg.leaderSessionEnded' && (
+              <button onClick={signOut} className="mt-2 rounded-lg bg-danger px-4 py-2 font-bold text-white">
+                {t('newMsg.signInAgain')}
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Sticky bottom action */}

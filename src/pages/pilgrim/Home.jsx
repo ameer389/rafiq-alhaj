@@ -5,6 +5,8 @@ import BottomNav, { PILGRIM_NAV } from '../../components/BottomNav'
 import { DarkHeader, Screen } from '../../components/Layout'
 import { useI18n } from '../../i18n'
 import { useSession } from '../../lib/session'
+import { usePilgrimMessages } from '../../lib/pilgrimMessages'
+import { LatestMessageCard } from '../../components/MessageCards'
 
 const TILES = [
   { icon: 'chat', label: 'home.tileAssistant', to: '/p/assistant' },
@@ -19,6 +21,9 @@ const TILES = [
 export default function PilgrimHome() {
   const { t } = useI18n()
   const { member, campaign } = useSession()
+  const { messages, acked } = usePilgrimMessages()
+  const latest = messages[0]
+  const latestUnread = latest && !acked.has(latest.id)
 
   return (
     <Screen nav={<BottomNav items={PILGRIM_NAV} />}>
@@ -28,6 +33,9 @@ export default function PilgrimHome() {
       />
 
       <div className="flex flex-col gap-4 px-4 py-5">
+        {/* A new (unconfirmed) leader message jumps to the top as a banner */}
+        {latest && latestUnread && <LatestMessageCard m={latest} />}
+
         <AssemblyCard campaign={campaign} />
 
         <Link to="/p/soon" className="flex items-center gap-4 rounded-[var(--radius-card)] bg-danger px-5 py-5 text-white">
@@ -49,6 +57,13 @@ export default function PilgrimHome() {
             </Link>
           ))}
         </div>
+
+        {latest && !latestUnread && <LatestMessageCard m={latest} />}
+        {messages.length > 1 && (
+          <Link to="/p/messages" className="text-center font-bold text-mint-ink underline underline-offset-4">
+            {t('msg.all')} ({messages.length})
+          </Link>
+        )}
       </div>
     </Screen>
   )

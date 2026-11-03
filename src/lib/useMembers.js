@@ -14,7 +14,7 @@ export function useMembers(campaignId) {
       else if (alive) setMembers(data)
     }
     fetchAll()
-    const ch = supabase.channel(`members-${campaignId}`)
+    const ch = supabase.channel(`members-${campaignId}-${Math.random().toString(36).slice(2)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'members', filter: `campaign_id=eq.${campaignId}` }, fetchAll)
       .subscribe()
     return () => { alive = false; supabase.removeChannel(ch) }

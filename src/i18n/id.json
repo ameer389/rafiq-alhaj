@@ -87,7 +87,9 @@
     "send": "Kirim",
     "sending": "Mengirim…",
     "sendFailed": "Gagal mengirim. Coba lagi.",
-    "sent": "Pesan terkirim"
+    "sent": "Pesan terkirim",
+    "leaderSessionEnded": "Sesi ketua Anda berakhir — silakan masuk lagi",
+    "signInAgain": "Masuk lagi"
   },
   "priority": {
     "normal": "Biasa",
@@ -97,5 +99,37 @@
   "messages": {
     "empty": "Belum ada pesan",
     "newMessage": "Pesan baru"
+  },
+  "msg": {
+    "title": "Pesan dari ketua rombongan",
+    "leaderRole": "Ketua rombongan",
+    "translatedFrom": "Diterjemahkan dari bahasa Arab",
+    "showOriginal": "Lihat teks asli",
+    "hideOriginal": "Sembunyikan teks asli",
+    "original": "Teks asli (bahasa Arab)",
+    "listen": "Dengarkan",
+    "stop": "Berhenti",
+    "noVoice": "Suara tidak tersedia untuk bahasa ini di perangkat ini",
+    "gotIt": "Saya mengerti",
+    "confirmed": "Terkonfirmasi — terima kasih",
+    "ackFailed": "Gagal mengonfirmasi. Coba lagi.",
+    "latest": "Pengumuman terbaru dari ketua",
+    "newBanner": "Pesan baru dari ketua",
+    "isNew": "Baru",
+    "read": "Baca",
+    "all": "Semua pesan",
+    "none": "Belum ada pesan dari ketua",
+    "notFound": "Pesan tidak ditemukan"
+  },
+  "acks": {
+    "understood": "mengerti",
+    "latestMessage": "Pesan terakhir",
+    "notConfirmed": "Belum konfirmasi",
+    "confirmed": "Sudah konfirmasi",
+    "allConfirmed": "Semua mengerti",
+    "details": "Detail",
+    "title": "Detail pesan",
+    "translations": "Terjemahan terkirim",
+    "live": "Langsung"
   }
 }

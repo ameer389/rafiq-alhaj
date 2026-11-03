@@ -6,7 +6,8 @@ import BottomNav, { LEADER_NAV } from '../../components/BottomNav'
 import { DarkHeader, Screen } from '../../components/Layout'
 import { useI18n } from '../../i18n'
 import { useSession } from '../../lib/session'
-import { useMembers } from '../../lib/useMembers'
+import { ackStats, useLeaderData } from '../../lib/leaderData'
+import AckCounter from '../../components/AckCounter'
 import { useOnline } from '../../lib/useOnline'
 import { fmtTime } from '../../lib/format'
 
@@ -24,7 +25,9 @@ export default function LeaderHome() {
   const { t, lang } = useI18n()
   const { member, campaign, signOut } = useSession()
   const online = useOnline()
-  const { members, pilgrims } = useMembers(campaign?.id)
+  const { members, pilgrims, messages, acks } = useLeaderData()
+  const latest = messages?.[0]
+  const latestStats = latest && ackStats(latest.id, acks, pilgrims)
   const [now, setNow] = useState(() => new Date().toISOString())
   useEffect(() => { setNow(new Date().toISOString()) }, [members])
 
@@ -56,6 +59,30 @@ export default function LeaderHome() {
           <Stat value="—" label={t('leader.statArrived')} tone="text-success" />
           <Stat value="—" label={t('leader.statRequests')} tone="text-gold-ink" />
         </div>
+
+        {/* Live "who understood" counter for the latest message */}
+        {latest && (
+          <Link to={`/l/m/${latest.id}`} className="block rounded-[var(--radius-card)] border border-line bg-white p-4">
+            <div className="mb-2 flex items-center gap-2">
+              <Icon name="megaphone" className="size-5 text-gold-ink" />
+              <span className="font-bold text-gold-ink">{t('acks.latestMessage')}</span>
+              <span className="ms-auto text-sm text-muted">{fmtTime(latest.created_at, lang, t)}</span>
+            </div>
+            <p dir="rtl" className="mb-3 line-clamp-2 leading-relaxed">{latest.original_text}</p>
+            <AckCounter count={latestStats.count} total={latestStats.total} size="lg" />
+            {latestStats.pending.length > 0 && (
+              <div className="mt-3 flex items-center justify-between gap-2 text-sm">
+                <span className="truncate text-muted">
+                  {t('acks.notConfirmed')}: {latestStats.pending.slice(0, 3).map((p) => p.name).join('، ')}
+                  {latestStats.pending.length > 3 ? ` +${latestStats.pending.length - 3}` : ''}
+                </span>
+                <span className="flex shrink-0 items-center gap-1 font-bold text-navy-800">
+                  {t('acks.details')}<Icon name="chevronLeft" className="size-4 ltr:-scale-x-100" />
+                </span>
+              </div>
+            )}
+          </Link>
+        )}
 
         <AssemblyCard campaign={campaign} />
 

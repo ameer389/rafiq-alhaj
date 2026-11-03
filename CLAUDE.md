@@ -139,8 +139,8 @@ Commit after each one with a working app. Mark ✅ here when done.
 **P0 — must ship today**
 0. [x] ✅ Onboarding: anonymous sign-in → join by code (`join_campaign` RPC) → name + language. Persist session (supabase-js does it).
 1. [x] ✅ Leader "new message" screen (design 18): recipients (all / not arrived), Arabic text, priority, translate preview per language (editable), send.
-2. [ ] Pilgrim message view (designs 09–11): message in his language, Listen (speechSynthesis), "Show original", big "فهمت ✓" button → insert acknowledgement. New messages appear live (Realtime) and as a banner on home.
-3. [ ] Leader live counter: on leader home (design 16) and per message — "32/40 فهموا" + list of who hasn't confirmed.
+2. [x] ✅ Pilgrim message view (designs 09–11): message in his language, Listen (speechSynthesis), "Show original", big "فهمت ✓" button → insert acknowledgement. New messages appear live (Realtime) and as a banner on home.
+3. [x] ✅ Leader live counter: on leader home (design 16) and per message — "32/40 فهموا" + list of who hasn't confirmed.
 
 **P1 — if time allows (in order)**
 4. [ ] Arrival check: leader taps "طلب تأكيد الوصول" → message with `kind='arrival_check'` → pilgrim taps "وصلت" → leader sees "39/48 وصلوا".
