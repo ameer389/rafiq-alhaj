@@ -16,6 +16,7 @@ import InstallHelper from '../../components/InstallHelper'
 // Screen 11 — status of my open help request, on top of home. Honest: "arrived" ≠ "seen".
 const REQ_STYLE = {
   queued: ['border-sand-line bg-sand-soft text-sand-ink', 'req_queued'],
+  sms: ['border-sand-line bg-sand-soft text-sand-ink', 'req_sms'], // sent by SMS, app sync still pending
   open: ['border-line bg-neutral-soft text-ink', 'req_open'],
   acknowledged: ['border-primary-line bg-primary-soft text-primary-ink', 'req_ack'],
   in_progress: ['border-primary-line bg-primary-soft text-primary-ink', 'req_way'],
@@ -24,7 +25,8 @@ function OpenRequestCard() {
   const { t } = useI18n()
   const { active: r } = useHelpRequests()
   if (!r) return null
-  const key = ['', 'queued', 'open', 'acknowledged', 'in_progress'][requestStep(r)]
+  const step = requestStep(r)
+  const key = step === 1 && r.sms_at ? 'sms' : ['', 'queued', 'open', 'acknowledged', 'in_progress'][step]
   const [cls, k] = REQ_STYLE[key] ?? REQ_STYLE.open
   return (
     <section className={`rounded-[var(--radius-card)] border px-5 py-4 ${cls}`}>

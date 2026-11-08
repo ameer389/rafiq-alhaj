@@ -11,7 +11,7 @@ const listeners = new Set()
 const emit = () => { snapshot = compute(); listeners.forEach((l) => l()) }
 
 const ua = typeof navigator !== 'undefined' ? navigator.userAgent : ''
-const isIos = /iphone|ipad|ipod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+export const isIos = /iphone|ipad|ipod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
 // Safari only: other iOS browsers / in-app webviews put "Add to Home Screen" elsewhere (or not at all).
 const isIosSafari = isIos && /safari/i.test(ua) && !/crios|fxios|edgios|opios|gsa\/|fban|fbav|instagram|line\//i.test(ua)
 

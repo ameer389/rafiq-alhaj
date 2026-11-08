@@ -25,7 +25,8 @@ export const requestCode = (r) => `L-${String(r?.client_id ?? r?.id ?? '').repla
 export function requestStep(r) {
   if (!r) return 0
   if (r.state === 'cancelled' || r.resolvedLocally || r.server?.status === 'resolved') return 5
-  if (r.state !== 'sent') return 1
+  // Not sent from this phone yet — unless the server already has it (the leader logged it from our SMS).
+  if (r.state !== 'sent' && !r.server) return 1
   return { open: 2, acknowledged: 3, in_progress: 4 }[r.server?.status] ?? 2
 }
 export const isActive = (r) => requestStep(r) > 0 && requestStep(r) < 5
@@ -70,7 +71,9 @@ export function HelpRequestsProvider({ children }) {
           type: r.type, note: r.note || null, lat: r.lat, lng: r.lng,
           location_shared: r.location_shared, created_at: r.created_at, // time created on the device
         })
-        const ok = !error || error.code === '23505' // duplicate client_id → it already arrived earlier
+        // duplicate client_id → it already arrived earlier (a previous retry, or the leader logged it from
+        // our SMS via leader_log_help) → SUCCESS: mark sent, no error, no retry.
+        const ok = !error || error.code === '23505'
         if (error && !ok) console.warn('help request not sent yet', error)
         // failed = we were online and the server still refused it (screen 23); offline stays a quiet "queued" (22)
         patch(r.client_id, ok
@@ -173,10 +176,19 @@ export function HelpRequestsProvider({ children }) {
 
   const retry = useCallback((cid) => { patch(cid, { failed: false }); setTimeout(flush, 0) }, [patch, flush])
 
+  // The pilgrim opened the SMS app for this request. It STAYS in the queue (synced later with the same
+  // client_id — a duplicate then counts as sent). We can't know the SMS really went out, so this only
+  // changes the wording on screen and the button stays available until the request is confirmed sent.
+  const markSms = useCallback((cid) => patch(cid, { sms_at: new Date().toISOString() }), [patch])
+
   // Screen 27 «وصلت بأمان»: never sent → close on the device only; sent → status=resolved, resolved_by=pilgrim
   // (RLS allows exactly this on his own request). Offline → remembered and sent later.
   const resolveMine = useCallback(async (r) => {
-    if (r.state !== 'sent') { patch(r.client_id, { state: 'cancelled', resolvedLocally: true }); return }
+    if (r.state !== 'sent' && !r.server) {
+      // Sent by SMS → the leader may have logged it: sync it (same client_id) and then close it on the server.
+      if (r.sms_at) { patch(r.client_id, { resolvedLocally: true, resolvePending: true }); setTimeout(flush, 0); return }
+      patch(r.client_id, { state: 'cancelled', resolvedLocally: true }); return
+    }
     if (!queueRef.current.some((x) => x.client_id === r.client_id)) { // server-only row → keep a local copy
       setQueue((q) => [{ ...r, server: undefined }, ...q])
     }
@@ -185,11 +197,11 @@ export function HelpRequestsProvider({ children }) {
       .update({ status: 'resolved', resolved_by: 'pilgrim' }).eq('client_id', r.client_id)
     if (!error) patch(r.client_id, { resolvePending: false })
     else console.warn('resolve will be retried', error)
-  }, [patch, setQueue])
+  }, [patch, setQueue, flush])
 
   const value = useMemo(() => ({
-    requests, active, submit, flush, retry, resolveMine, sharing, startSharing, stopSharing,
-  }), [requests, active, submit, flush, retry, resolveMine, sharing, startSharing, stopSharing])
+    requests, active, submit, flush, retry, markSms, resolveMine, sharing, startSharing, stopSharing,
+  }), [requests, active, submit, flush, retry, markSms, resolveMine, sharing, startSharing, stopSharing])
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }
 

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Navigate, useParams } from 'react-router-dom'
 import Icon from '../../components/Icon'
 import { Screen, TopBar } from '../../components/Layout'
@@ -10,6 +10,10 @@ import { requestCode, requestStep, useHelpRequests } from '../../lib/helpRequest
 import { usePilgrimMessages } from '../../lib/pilgrimMessages'
 import { useOnline } from '../../lib/useOnline'
 import { fmtNum } from '../../lib/format'
+import { useSession } from '../../lib/session'
+import { smsBody, smsUrl, telUrl } from '../../lib/sms'
+
+const SMS_AFTER_MS = 20000 // online but still not sent after this → offer the SMS fallback
 
 // /p/help → my active request, or start from «أنا ضائع».
 export function HelpIndex() {
@@ -24,20 +28,42 @@ export default function HelpStatus() {
   const { cid } = useParams()
   const { t, lang } = useI18n()
   const online = useOnline()
-  const { requests, retry, resolveMine, sharing, startSharing, stopSharing } = useHelpRequests()
+  const { requests, retry, markSms, resolveMine, sharing, startSharing, stopSharing } = useHelpRequests()
   const { messages } = usePilgrimMessages()
+  const { member, campaign } = useSession()
   const callLeader = useCallLeader()
   const [noLoc, setNoLoc] = useState(false)
   const [locBusy, setLocBusy] = useState(false)
 
   const r = requests.find((x) => x.client_id === cid)
+  const step = requestStep(r)
+
+  // SMS fallback: offline, or still not sent 20 s after it was created → offer SMS + call (needs a phone).
+  const createdMs = r ? new Date(r.created_at).getTime() : 0
+  const [now, setNow] = useState(() => Date.now())
+  useEffect(() => {
+    if (step !== 1) return
+    const left = createdMs + SMS_AFTER_MS - Date.now()
+    if (left <= 0) return
+    const id = setTimeout(() => setNow(Date.now()), left + 50)
+    return () => clearTimeout(id)
+  }, [createdMs, step])
+
   if (!r) return <Navigate to="/p/lost" replace />
 
-  const step = requestStep(r)
+  const phone = campaign?.leader_phone
+  const showSms = step === 1 && !!phone && (!online || now - createdMs >= SMS_AFTER_MS)
+  const sms = showSms ? smsUrl(phone, smsBody(r, member?.name)) : null
+  const sentBySms = step === 1 && !!r.sms_at
+  const openSms = () => {
+    console.info('[rafiq] SMS fallback link:', sms) // for checking the body during tests
+    markSms(r.client_id)
+  }
+
   const failed = step === 1 && r.failed && online
   const byLeader = step === 5 && r.server?.resolved_by === 'leader' && !r.resolvedLocally
   const [title, body] = step === 1
-    ? (failed ? ['req.failTitle', 'req.failBody'] : ['req.s1Title', 'req.s1Body'])
+    ? (sentBySms ? ['req.smsTitle', 'req.smsBody'] : failed ? ['req.failTitle', 'req.failBody'] : ['req.s1Title', 'req.s1Body'])
     : step === 5 ? (byLeader ? ['req.closedTitle', 'req.closedBody'] : ['req.s5Title', 'req.s5Body'])
     : [`req.s${step}Title`, `req.s${step}Body`]
   // 26: the leader's latest message sent after the request
@@ -64,16 +90,27 @@ export default function HelpStatus() {
       </div>
 
       <div className="mt-5 flex flex-col gap-4 px-5">
-        {step === 1 && !failed && <Notice tone="sand">{t('req.s1Notice')}</Notice>}
+        {step === 1 && !failed && !sentBySms && <Notice tone="sand">{t('req.s1Notice')}</Notice>}
         {leaderMsg && <LatestMessageCard m={leaderMsg} />}
+
+        {/* SMS fallback — one tap, no typing. Stays until the request is confirmed sent. */}
+        {showSms && (
+          <div className="flex flex-col gap-3">
+            {!sentBySms && <p className="text-center text-lg font-semibold">{t('req.smsHint')}</p>}
+            <Button href={sms} icon="chat" variant={sentBySms ? 'secondary' : 'primary'} onClick={openSms} className="text-xl">
+              {t(sentBySms ? 'req.smsAgain' : 'req.smsBtn')}
+            </Button>
+            <Button href={telUrl(phone)} variant="secondary" icon="phone">{t('req.callLeader')}</Button>
+          </div>
+        )}
 
         {step === 5 ? (
           <Button to="/p">{t('req.backHome')}</Button>
         ) : (
           <>
             {failed && <Button onClick={() => retry(r.client_id)}>{t('req.retryNow')}</Button>}
-            <Button icon="check" onClick={() => resolveMine(r)}>{t('req.arrivedSafe')}</Button>
-            <Button variant="secondary" icon="phone" onClick={callLeader.call}>{t('home.callLeader')}</Button>
+            <Button icon="check" variant={showSms ? 'secondary' : 'primary'} onClick={() => resolveMine(r)}>{t('req.arrivedSafe')}</Button>
+            {!showSms && <Button variant="secondary" icon="phone" onClick={callLeader.call}>{t('home.callLeader')}</Button>}
 
             {/* location row (22–26): explicit, stoppable, stops by itself on «وصلت بأمان» */}
             <div className="flex min-h-16 items-center gap-3 rounded-[var(--radius-card)] border border-line bg-neutral-soft px-4 py-3">

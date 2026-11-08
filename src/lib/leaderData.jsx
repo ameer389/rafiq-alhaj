@@ -22,6 +22,7 @@ export function LeaderDataProvider({ children }) {
   const helpRef = useRef(helpRequests)
   helpRef.current = helpRequests
   const cacheCid = useRef(cid) // campaign the state above belongs to
+  const fetchHelpRef = useRef(() => {})
 
   // Keep the device cache in step with what's on screen (only real data — never the empty initial state).
   // Declared BEFORE the fetch effect: on a campaign switch they run while cacheCid is still the old one,
@@ -57,6 +58,7 @@ export function LeaderDataProvider({ children }) {
       if (error) console.error('help_requests', error)
       else if (alive) setHelpRequests(data)
     }
+    fetchHelpRef.current = fetchHelp
     const resync = () => { fetchAll(); fetchHelp() }
     resync()
 
@@ -90,8 +92,11 @@ export function LeaderDataProvider({ children }) {
 
   const openRequests = useMemo(() => (helpRequests ?? []).filter((r) => r.status !== 'resolved'), [helpRequests])
 
-  const value = useMemo(() => ({ messages, acks, members, pilgrims, addMessage, helpRequests, openRequests, updateRequest }),
-    [messages, acks, members, pilgrims, addMessage, helpRequests, openRequests, updateRequest])
+  // Re-read help requests now (e.g. right after /r logged one from an SMS). Resolves when done.
+  const refreshHelp = useCallback(() => Promise.resolve(fetchHelpRef.current()).catch(() => {}), [])
+
+  const value = useMemo(() => ({ messages, acks, members, pilgrims, addMessage, helpRequests, openRequests, updateRequest, refreshHelp }),
+    [messages, acks, members, pilgrims, addMessage, helpRequests, openRequests, updateRequest, refreshHelp])
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }
 

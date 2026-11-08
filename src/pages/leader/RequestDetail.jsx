@@ -10,7 +10,7 @@ import { isAuthError } from '../../lib/session'
 import { requestCode } from '../../lib/helpRequests'
 import { useToast } from '../../lib/toast'
 import { fmtDayTime, fmtTime } from '../../lib/format'
-import { REQ_CHIP } from './Home'
+import { REQ_CHIP, SmsBadge } from './Home'
 
 export const mapsUrl = (lat, lng) => `https://www.google.com/maps?q=${lat},${lng}`
 
@@ -60,6 +60,7 @@ export default function RequestDetail() {
             <p className="mt-1 text-lg text-muted">
               <b dir="ltr" className="text-ink">{requestCode(r)}</b> · {t('lh.langOf', { lang: langLabel(m?.lang) })}
             </p>
+            {r.via === 'sms' && <div className="mt-2"><SmsBadge /></div>}
           </div>
           <Chip tone={REQ_CHIP[r.status]}>{t(`lh.st_${r.status}`)}</Chip>
         </div>

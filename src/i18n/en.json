@@ -74,7 +74,9 @@
     "req_ack_body": "They'll contact you soon. Stay where you are if you can.",
     "req_way_title": "Help is on the way",
     "req_way_body": "Stay where you are if you can.",
-    "viewRequest": "View request"
+    "viewRequest": "View request",
+    "req_sms_title": "Your request was sent by SMS",
+    "req_sms_body": "It will also go through the app when the internet is back."
   },
   "leader": {
     "badge": "Campaign leader",
@@ -308,7 +310,13 @@
     "locSaved": "Your location is saved with the request",
     "sendLoc": "Send my location",
     "stop": "Stop",
-    "noLocation": "Couldn't get your location. You can send without it."
+    "noLocation": "Couldn't get your location. You can send without it.",
+    "smsHint": "No internet? Send your request to your leader by text message.",
+    "smsBtn": "Send the request by SMS",
+    "smsAgain": "Send the SMS again",
+    "callLeader": "Call the leader",
+    "smsTitle": "Sent by SMS",
+    "smsBody": "We opened a message to your leader. If you didn’t send it, tap the button again. The request will also go through the app when the internet is back."
   },
   "myc": {
     "group": "Group",
@@ -360,7 +368,14 @@
     "note": "Pilgrim's note",
     "times": "Times",
     "settings": "Settings",
-    "updateFailed": "Could not update. Try again."
+    "updateFailed": "Could not update. Try again.",
+    "viaSms": "SMS",
+    "phoneLabel": "Leader’s mobile number",
+    "phoneHint": "Pilgrims call this number and send help requests to it by SMS. Start with + and the country code.",
+    "phoneSave": "Save number",
+    "phoneInvalid": "Use international format starting with +, e.g. +966550102024",
+    "phoneSaved": "Number saved",
+    "phoneFailed": "Couldn’t save the number. Try again."
   },
   "mem": {
     "title": "Members",
@@ -477,5 +492,44 @@
     "ios1": "Tap the Share button in Safari’s toolbar",
     "ios2": "Choose “Add to Home Screen”",
     "ios3": "Tap “Add”"
+  },
+  "sms": {
+    "bodyTitle": "Rafiq Alhaj 🆘",
+    "bodyNeeds": "{name} needs help ({type})",
+    "bodyLocation": "Location: {url}",
+    "bodyLog": "Log the request: {url}",
+    "type_lost": "lost",
+    "type_medical": "medical",
+    "type_other": "other"
+  },
+  "smsLog": {
+    "loginTitle": "Sign in as a leader to log this request",
+    "loginHint": "Enter the leader code and your name — the request is then logged automatically.",
+    "code": "Leader code",
+    "signIn": "Sign in as leader",
+    "checking": "Checking…",
+    "cancel": "Not now",
+    "badCode": "That code isn’t right. Check it and try again.",
+    "notLeaderCode": "That’s a pilgrim code, not a leader code. Enter the leader code.",
+    "netFail": "Couldn’t connect. Check the internet and try again.",
+    "pilgrimDevice": "This device is signed in as a pilgrim ({name}). Signing in as a leader will turn it into a leader account.",
+    "working": "Logging the request…",
+    "offline": "No internet — the request will be logged automatically when it’s back.",
+    "logged": "{name}’s request is logged",
+    "duplicate": "This request is already logged",
+    "duplicateBody": "{name}’s request is in your requests.",
+    "viaSms": "Arrived by SMS",
+    "type": "Request type",
+    "time": "Request time",
+    "location": "Location",
+    "openMap": "Map",
+    "noLocation": "No location was sent with the request",
+    "openRequest": "Open the request",
+    "home": "Home",
+    "retry": "Try again",
+    "errNotMine": "This pilgrim isn’t in your campaign",
+    "errLink": "The link is incomplete or invalid",
+    "errSession": "Your leader session ended — sign in again",
+    "errNet": "Couldn’t log the request. Check the internet and try again."
   }
 }

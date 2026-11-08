@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { useI18n } from './i18n'
 import { useSession } from './lib/session'
 import { LEADER_NAV } from './components/BottomNav'
@@ -20,6 +20,7 @@ import RequestDetail from './pages/leader/RequestDetail'
 import Members from './pages/leader/Members'
 import MemberDetail from './pages/leader/MemberDetail'
 import Assembly from './pages/leader/Assembly'
+import SmsLog, { SmsLeaderLogin } from './pages/leader/SmsLog'
 import { LeaderDataProvider } from './lib/leaderData'
 import OfflineBanner from './components/OfflineBanner'
 
@@ -41,8 +42,13 @@ export default function App() {
 function AppRoutes() {
   const { member, loading, isLeader } = useSession()
 
+  const { pathname } = useLocation()
+
   // Show splash only on the very first load (no cached session yet).
   if (loading && !member) return <Splash />
+  // /r = link from a pilgrim's SMS. Not a leader here (no session / pilgrim) → sign in as leader first;
+  // the URL (and its params) stays, so <SmsLog/> continues automatically after sign-in.
+  if (pathname === '/r' && !isLeader) return <SmsLeaderLogin />
   if (!member) return <Join />
 
   return isLeader ? (
@@ -55,6 +61,7 @@ function AppRoutes() {
       <Route path="/l/messages" element={<Messages />} />
       <Route path="/l/m/:id" element={<MessageDetail />} />
       <Route path="/l/assembly" element={<Assembly />} />
+      <Route path="/r" element={<SmsLog />} />
       {/* old links */}
       <Route path="/l/requests" element={<Navigate to="/l" replace />} />
       <Route path="/l/new" element={<Navigate to="/l/messages" replace />} />

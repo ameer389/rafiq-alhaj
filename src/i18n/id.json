@@ -74,7 +74,9 @@
     "req_ack_body": "Akan segera menghubungi Anda. Tetap di tempat jika bisa.",
     "req_way_title": "Bantuan dalam perjalanan",
     "req_way_body": "Tetap di tempat jika bisa.",
-    "viewRequest": "Lihat permintaan"
+    "viewRequest": "Lihat permintaan",
+    "req_sms_title": "Permintaan Anda terkirim lewat SMS",
+    "req_sms_body": "Permintaan juga akan dikirim lewat aplikasi saat internet kembali."
   },
   "leader": {
     "badge": "Ketua rombongan",
@@ -308,7 +310,13 @@
     "locSaved": "Lokasi tersimpan bersama permintaan",
     "sendLoc": "Kirim lokasi saya",
     "stop": "Hentikan",
-    "noLocation": "Lokasi tidak didapat. Anda bisa mengirim tanpanya."
+    "noLocation": "Lokasi tidak didapat. Anda bisa mengirim tanpanya.",
+    "smsHint": "Tidak ada internet? Kirim permintaan Anda ke pemimpin lewat SMS.",
+    "smsBtn": "Kirim permintaan lewat SMS",
+    "smsAgain": "Kirim SMS lagi",
+    "callLeader": "Telepon pemimpin",
+    "smsTitle": "Terkirim lewat SMS",
+    "smsBody": "Kami membuka pesan untuk pemimpin Anda. Jika belum terkirim, ketuk tombolnya lagi. Permintaan juga akan dikirim lewat aplikasi saat internet kembali."
   },
   "myc": {
     "group": "Rombongan",
@@ -360,7 +368,14 @@
     "note": "Catatan jamaah",
     "times": "Waktu",
     "settings": "Pengaturan",
-    "updateFailed": "Gagal memperbarui. Coba lagi."
+    "updateFailed": "Gagal memperbarui. Coba lagi.",
+    "viaSms": "SMS",
+    "phoneLabel": "Nomor HP pemimpin",
+    "phoneHint": "Jamaah menelepon nomor ini dan mengirim permintaan bantuan lewat SMS. Awali dengan + dan kode negara.",
+    "phoneSave": "Simpan nomor",
+    "phoneInvalid": "Tulis dalam format internasional diawali +, mis. +966550102024",
+    "phoneSaved": "Nomor tersimpan",
+    "phoneFailed": "Nomor gagal disimpan. Coba lagi."
   },
   "mem": {
     "title": "Anggota",
@@ -477,5 +492,44 @@
     "ios1": "Ketuk tombol Bagikan di bilah Safari",
     "ios2": "Pilih “Tambahkan ke Layar Utama”",
     "ios3": "Ketuk “Tambah”"
+  },
+  "sms": {
+    "bodyTitle": "Rafiq Alhaj 🆘",
+    "bodyNeeds": "{name} butuh bantuan ({type})",
+    "bodyLocation": "Lokasi: {url}",
+    "bodyLog": "Catat permintaan: {url}",
+    "type_lost": "tersesat",
+    "type_medical": "medis",
+    "type_other": "lainnya"
+  },
+  "smsLog": {
+    "loginTitle": "Masuk sebagai pemimpin untuk mencatat permintaan",
+    "loginHint": "Masukkan kode pemimpin dan nama Anda — permintaan lalu dicatat otomatis.",
+    "code": "Kode pemimpin",
+    "signIn": "Masuk sebagai pemimpin",
+    "checking": "Memeriksa…",
+    "cancel": "Nanti saja",
+    "badCode": "Kode salah. Periksa lalu coba lagi.",
+    "notLeaderCode": "Itu kode jamaah, bukan kode pemimpin. Masukkan kode pemimpin.",
+    "netFail": "Tidak bisa terhubung. Periksa internet lalu coba lagi.",
+    "pilgrimDevice": "Perangkat ini masuk sebagai jamaah ({name}). Masuk sebagai pemimpin akan mengubahnya menjadi akun pemimpin.",
+    "working": "Mencatat permintaan…",
+    "offline": "Tidak ada internet — permintaan akan dicatat otomatis saat internet kembali.",
+    "logged": "Permintaan {name} tercatat",
+    "duplicate": "Permintaan ini sudah tercatat",
+    "duplicateBody": "Permintaan {name} ada di daftar permintaan.",
+    "viaSms": "Masuk lewat SMS",
+    "type": "Jenis permintaan",
+    "time": "Waktu permintaan",
+    "location": "Lokasi",
+    "openMap": "Peta",
+    "noLocation": "Lokasi tidak dikirim bersama permintaan",
+    "openRequest": "Buka permintaan",
+    "home": "Beranda",
+    "retry": "Coba lagi",
+    "errNotMine": "Jamaah ini bukan dari rombongan Anda",
+    "errLink": "Tautan tidak lengkap atau tidak valid",
+    "errSession": "Sesi pemimpin Anda berakhir — masuk lagi",
+    "errNet": "Permintaan gagal dicatat. Periksa internet lalu coba lagi."
   }
 }
