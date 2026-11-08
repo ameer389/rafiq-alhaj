@@ -9,6 +9,7 @@ import { useSession } from '../../lib/session'
 import { arrivalStats, useLeaderData } from '../../lib/leaderData'
 import { requestCode } from '../../lib/helpRequests'
 import { fmtNum, fmtTime } from '../../lib/format'
+import InstallHelper from '../../components/InstallHelper'
 
 export const REQ_CHIP = { open: 'danger', acknowledged: 'sand', in_progress: 'primary', resolved: 'neutral' }
 
@@ -76,10 +77,14 @@ export default function LeaderHome() {
           <Link to="/l/assembly" className="px-1 py-1 text-lg font-bold text-primary">{t('lh.edit')}</Link>
         </section>
 
+        {/* once after joining, until closed/installed (also inside «الإعدادات» below) */}
+        <InstallHelper once />
+
         <details className="mt-2 rounded-[var(--radius-card)] border border-line bg-surface px-5 py-4">
           <summary className="cursor-pointer text-lg font-bold text-muted">{t('lh.settings')}</summary>
           <div className="mt-4 flex flex-col gap-4">
             <TextSizeControl />
+            <InstallHelper />
             <Button variant="secondary" icon="logOut" iconClass="size-5 ltr:-scale-x-100"
               onClick={() => confirm(t('common.signOutConfirm')) && signOut()}>{t('common.signOut')}</Button>
           </div>

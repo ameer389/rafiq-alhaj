@@ -465,5 +465,17 @@
     "dir_SW": "barat daya",
     "dir_W": "barat",
     "dir_NW": "barat laut"
+  },
+  "offline": {
+    "banner": "Anda sedang offline — aplikasi tetap berfungsi"
+  },
+  "install": {
+    "title": "Simpan Rafiq Alhaj di ponsel Anda",
+    "body": "Buka dari layar utama dengan satu sentuhan — bahkan tanpa internet.",
+    "button": "Tambahkan aplikasi ke layar utama",
+    "later": "Nanti saja",
+    "ios1": "Ketuk tombol Bagikan di bilah Safari",
+    "ios2": "Pilih “Tambahkan ke Layar Utama”",
+    "ios3": "Ketuk “Tambah”"
   }
 }

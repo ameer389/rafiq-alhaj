@@ -29,7 +29,8 @@ export default function RouteMap({ me, target, labels, onStatus }) {
     <div className={`h-60 overflow-hidden rounded-[var(--radius-card)] border border-line transition-opacity ${loaded ? 'opacity-100' : 'opacity-0'}`}>
       <MapContainer center={[target.lat, target.lng]} zoom={17} zoomControl={false} attributionControl={false}
         className="h-full w-full" dragging touchZoom scrollWheelZoom={false}>
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" eventHandlers={{ tileload: ok }} />
+        {/* crossOrigin: CORS tiles → the service worker caches real 200 responses (opaque ones eat quota) */}
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" crossOrigin="anonymous" eventHandlers={{ tileload: ok }} />
         <Fit points={points} />
         {me && <Polyline positions={points} pathOptions={{ color: '#175b4d', weight: 4, dashArray: '2 10', lineCap: 'round' }} />}
         <CircleMarker center={[target.lat, target.lng]} radius={10} pathOptions={{ color: '#ffffff', weight: 3, fillColor: '#175b4d', fillOpacity: 1 }}>

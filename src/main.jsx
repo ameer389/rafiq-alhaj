@@ -1,7 +1,9 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
+import './fonts.css' // self-hosted (precached) so Arabic + Urdu Nastaliq render offline
 import './index.css'
+import './lib/install' // capture `beforeinstallprompt` as early as possible
 import App from './App'
 import { I18nProvider } from './i18n'
 import { SessionProvider } from './lib/session'

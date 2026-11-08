@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { supabase } from './supabase'
-import { load, save } from './storage'
+import { CACHE_PREFIX, clearPrefix, load, save } from './storage'
 import { useI18n } from '../i18n'
 import { subscribeLive } from './live'
 
@@ -70,7 +70,11 @@ export function SessionProvider({ children }) {
   // `apply: false` lets callers inspect without switching screens.
   const refreshMembership = useCallback(async ({ apply = true } = {}) => {
     const mySeq = seq.current
-    const { data: { session } } = await supabase.auth.getSession()
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+    // OFFLINE: when the access token has expired and the refresh can't reach the server, supabase-js
+    // keeps the stored session but returns { session: null, error }. That is NOT a sign-out — throw so
+    // the caller keeps the cached member/campaign (a real sign-out arrives as SIGNED_OUT, see below).
+    if (sessionError) throw sessionError
     if (!session) { if (apply && seq.current === mySeq) applyMember(null, null); return null }
     // The user left the campaign on this device: the member row still exists (same anonymous user,
     // reused on re-join), but don't log him back in — stay on the join screen until he joins again.
@@ -80,11 +84,17 @@ export function SessionProvider({ children }) {
     return m
   }, [applyMember])
 
-  // Initial load
+  // Initial load. Offline → render the cached member/campaign right away (no network wait, never the
+  // join screen while a cached member exists) and refresh when the network comes back.
   useEffect(() => {
-    refreshMembership()
-      .catch((e) => console.warn('session refresh failed, using cache', e)) // offline: keep cache
-      .finally(() => setLoading(false))
+    if (navigator.onLine) {
+      refreshMembership()
+        .catch((e) => console.warn('session refresh failed, using cache', e)) // offline: keep cache
+        .finally(() => setLoading(false))
+    } else setLoading(false)
+    const onOnline = () => refreshMembership().catch((e) => console.warn('session refresh failed, using cache', e))
+    window.addEventListener('online', onOnline)
+    return () => window.removeEventListener('online', onOnline)
   }, [refreshMembership])
 
   // Cross-tab sync
@@ -93,10 +103,13 @@ export function SessionProvider({ children }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (hold.current) return
       const cur = memberRef.current
-      if (event === 'SIGNED_OUT' || !session) {
+      if (event === 'SIGNED_OUT') {
         if (cur) applyMember(null, null)
         return
       }
+      // No session WITHOUT a sign-out (e.g. INITIAL_SESSION offline with an expired token): keep the cache.
+      // A genuinely missing session is handled by refreshMembership (getSession → null, no error).
+      if (!session) return
       if (!cur || cur.user_id !== session.user.id) {
         // Don't call Supabase inside the callback (can deadlock the auth lock) — defer.
         setTimeout(() => refreshMembership().catch((e) => console.warn(e)), 0)
@@ -203,7 +216,8 @@ export function SessionProvider({ children }) {
     hold.current = false
     const m = memberRef.current
     if (m) supabase.from('members').update({ shared_lat: null, shared_lng: null, location_shared_at: null }).eq('id', m.id).then(() => {}, () => {})
-    for (const k of ['rafiq.messages', 'rafiq.acked', 'rafiq.helpQueue', 'rafiq.pendingLang', 'rafiq.sharingLocation']) save(k, null)
+    for (const k of ['rafiq.messages', 'rafiq.acked', 'rafiq.leaders', 'rafiq.helpQueue', 'rafiq.pendingLang', 'rafiq.sharingLocation']) save(k, null)
+    clearPrefix(CACHE_PREFIX)
     save(LEFT_KEY, true)
     applyMember(null, null)
   }, [applyMember])

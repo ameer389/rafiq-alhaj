@@ -21,13 +21,24 @@ import Members from './pages/leader/Members'
 import MemberDetail from './pages/leader/MemberDetail'
 import Assembly from './pages/leader/Assembly'
 import { LeaderDataProvider } from './lib/leaderData'
+import OfflineBanner from './components/OfflineBanner'
 
 function Splash() {
   const { t } = useI18n()
   return <div className="grid min-h-dvh place-items-center bg-primary-dark text-xl font-bold text-white">{t('app.name')}</div>
 }
 
+// Calm "offline — the app works" strip on every screen (incl. join), above the routes.
 export default function App() {
+  return (
+    <>
+      <OfflineBanner />
+      <AppRoutes />
+    </>
+  )
+}
+
+function AppRoutes() {
   const { member, loading, isLeader } = useSession()
 
   // Show splash only on the very first load (no cached session yet).

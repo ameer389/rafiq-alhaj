@@ -10,6 +10,7 @@ import { LANGS, useI18n } from '../../i18n'
 import { useSession } from '../../lib/session'
 import { usePilgrimMessages } from '../../lib/pilgrimMessages'
 import { fmtDayTime, fmtTime } from '../../lib/format'
+import InstallHelper from '../../components/InstallHelper'
 
 const ORDER = ['ar', 'en', 'ur', 'id']
 
@@ -64,6 +65,8 @@ export default function Campaign() {
         </div>
 
         <div className="mt-3"><TextSizeControl /></div>
+
+        <InstallHelper className="mt-3" />
 
         <Button variant="secondary" icon="logOut" iconClass="size-5 ltr:-scale-x-100" className="mt-4"
           onClick={() => confirm(t('common.signOutConfirm')) && signOut()}>{t('common.signOut')}</Button>

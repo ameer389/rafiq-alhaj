@@ -4,23 +4,38 @@ import { useSession } from './session'
 import { useMembers } from './useMembers'
 import { isArrival, recipientsOf } from './arrival'
 import { subscribeLive } from './live'
+import { loadCache, saveCache } from './storage'
 
 // Leader side: all campaign messages + who confirmed each one, kept live via Realtime.
 // acks = { [messageId]: { [memberId]: acked_at } }
+// Cached per campaign on the device: renders from the cache first (opens offline), then refreshes.
 const Ctx = createContext(null)
+const KEEP = 60 // newest messages / requests kept on the device
 
 export function LeaderDataProvider({ children }) {
   const { campaign } = useSession()
   const cid = campaign?.id
   const { members, pilgrims } = useMembers(cid)
-  const [messages, setMessages] = useState(null)
-  const [acks, setAcks] = useState({})
-  const [helpRequests, setHelpRequests] = useState(null)
+  const [messages, setMessages] = useState(() => loadCache(cid, 'messages'))
+  const [acks, setAcks] = useState(() => loadCache(cid, 'acks', {}))
+  const [helpRequests, setHelpRequests] = useState(() => loadCache(cid, 'help'))
   const helpRef = useRef(helpRequests)
   helpRef.current = helpRequests
+  const cacheCid = useRef(cid) // campaign the state above belongs to
+
+  // Keep the device cache in step with what's on screen (only real data — never the empty initial state).
+  // Declared BEFORE the fetch effect: on a campaign switch they run while cacheCid is still the old one,
+  // so the old campaign's data is never written under the new campaign's key.
+  useEffect(() => { if (messages && cacheCid.current === cid) saveCache(cid, 'messages', messages.slice(0, KEEP)) }, [cid, messages])
+  useEffect(() => { if (cacheCid.current === cid) saveCache(cid, 'acks', acks) }, [cid, acks])
+  useEffect(() => { if (helpRequests && cacheCid.current === cid) saveCache(cid, 'help', helpRequests.slice(0, KEEP)) }, [cid, helpRequests])
 
   useEffect(() => {
     if (!cid) return
+    if (cacheCid.current !== cid) { // switched campaign while mounted → show that campaign's cache
+      cacheCid.current = cid
+      setMessages(loadCache(cid, 'messages')); setAcks(loadCache(cid, 'acks', {})); setHelpRequests(loadCache(cid, 'help'))
+    }
     let alive = true
     const fetchAll = async () => {
       const { data: msgs, error } = await supabase.from('messages').select('*')

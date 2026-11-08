@@ -465,5 +465,17 @@
     "dir_SW": "south-west",
     "dir_W": "west",
     "dir_NW": "north-west"
+  },
+  "offline": {
+    "banner": "You’re offline — the app still works"
+  },
+  "install": {
+    "title": "Keep Rafiq Alhaj on your phone",
+    "body": "Opens from your home screen with one tap — even without internet.",
+    "button": "Add the app to your home screen",
+    "later": "Not now",
+    "ios1": "Tap the Share button in Safari’s toolbar",
+    "ios2": "Choose “Add to Home Screen”",
+    "ios3": "Tap “Add”"
   }
 }

@@ -37,6 +37,9 @@ const P = {
   userPlus: <><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M19 8v6" /><path d="M22 11h-6" /></>,
   chevronRight: <path d="m9 18 6-6-6-6" />,
   navigation: <path d="M12 2 19 21 12 17 5 21 12 2Z" />,
+  share: <><path d="M12 2v13" /><path d="m16 6-4-4-4 4" /><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /></>, // iOS Share
+  squarePlus: <><rect width="18" height="18" x="3" y="3" rx="2" /><path d="M8 12h8" /><path d="M12 8v8" /></>,
+  download: <><path d="M12 15V3" /><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="m7 10 5 5 5-5" /></>,
 }
 
 export default function Icon({ name, className = 'size-5', strokeWidth = 2 }) {

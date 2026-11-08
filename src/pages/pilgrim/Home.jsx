@@ -11,6 +11,7 @@ import { requestStep, useHelpRequests } from '../../lib/helpRequests'
 import { useCallLeader } from '../../components/CallLeader'
 import { useSoon } from '../../lib/toast'
 import { fmtTime } from '../../lib/format'
+import InstallHelper from '../../components/InstallHelper'
 
 // Screen 11 — status of my open help request, on top of home. Honest: "arrived" ≠ "seen".
 const REQ_STYLE = {
@@ -107,6 +108,9 @@ export default function PilgrimHome() {
         )}
 
         <Button variant="secondary" icon="users" to="/p/campaign" className="text-xl">{t('home.campaignSettings')}</Button>
+
+        {/* once after joining, until closed/installed (also always available on «حملتي») */}
+        <InstallHelper once />
       </div>
 
       {callLeader.sheet}

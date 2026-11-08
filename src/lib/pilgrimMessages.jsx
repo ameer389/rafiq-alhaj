@@ -13,7 +13,7 @@ export function PilgrimMessagesProvider({ children }) {
   const { member, campaign } = useSession()
   const [messages, setMessages] = useState(() => load('rafiq.messages', []))
   const [acked, setAcked] = useState(() => new Set(load('rafiq.acked', [])))
-  const [leaders, setLeaders] = useState({})
+  const [leaders, setLeaders] = useState(() => load('rafiq.leaders', {}))
   const [incoming, setIncoming] = useState(null) // newest message received live (for the floating banner)
 
   const cid = campaign?.id
@@ -46,7 +46,7 @@ export function PilgrimMessagesProvider({ children }) {
       }
       if (a.error) console.error('acks', a.error)
       else { const s = new Set(a.data.map((x) => x.message_id)); setAcked(s); save('rafiq.acked', [...s]) }
-      if (!l.error) setLeaders(Object.fromEntries(l.data.map((x) => [x.id, x.name])))
+      if (!l.error) { const map = Object.fromEntries(l.data.map((x) => [x.id, x.name])); setLeaders(map); save('rafiq.leaders', map) }
     }
     fetchAll()
 

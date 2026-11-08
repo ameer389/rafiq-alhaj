@@ -1,18 +1,22 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { supabase } from './supabase'
 import { subscribeLive } from './live'
+import { loadCache, saveCache } from './storage'
 
 // All members of the campaign, kept live via Realtime.
+// Cached per campaign on the device: renders from the cache first (opens offline), then refreshes.
 export function useMembers(campaignId) {
-  const [members, setMembers] = useState([])
+  const [members, setMembers] = useState(() => loadCache(campaignId, 'members', []))
+  const cacheCid = useRef(campaignId) // campaign the state belongs to
 
   useEffect(() => {
     if (!campaignId) return
+    if (cacheCid.current !== campaignId) { cacheCid.current = campaignId; setMembers(loadCache(campaignId, 'members', [])) }
     let alive = true
     const fetchAll = async () => {
       const { data, error } = await supabase.from('members').select('*').eq('campaign_id', campaignId).order('name')
-      if (error) console.error('members', error)
-      else if (alive) setMembers(data)
+      if (error) console.warn('members (using cache)', error)
+      else if (alive) { setMembers(data); saveCache(campaignId, 'members', data) }
     }
     fetchAll()
     const stop = subscribeLive(`members-${campaignId}`, (ch) => ch
