@@ -1,6 +1,6 @@
 # Rafiq Alhaj — Demo
 
-**Live URL:** _(add after connecting the GitHub repo to Vercel)_
+**Live URL:** https://rafiq-alhaj-nine.vercel.app
 **Repo:** https://github.com/ameer389/rafiq-alhaj
 
 ## Join codes
